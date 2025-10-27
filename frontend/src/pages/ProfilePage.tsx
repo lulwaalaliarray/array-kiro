@@ -1,521 +1,813 @@
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import toast from 'react-hot-toast';
+import { useNavigate, Link } from 'react-router-dom';
+import { routes } from '../utils/navigation';
+import { useToast } from '../components/Toast';
+import { userStorage } from '../utils/userStorage';
 
 interface User {
   id: string;
+  name: string;
   email: string;
-  role: 'PATIENT' | 'DOCTOR' | 'ADMIN';
-  isVerified: boolean;
-  isActive: boolean;
+  userType?: string;
+  cpr?: string;
+  status?: string;
+  createdAt?: string;
+  avatar?: string;
 }
 
-interface PatientProfile {
-  id: string;
-  name: string;
-  age: number;
-  gender: string;
-  phone: string;
-  address: string;
-}
+const ProfilePage: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
-interface DoctorProfile {
-  id: string;
-  name: string;
-  profilePicture?: string;
-  medicalLicenseNumber: string;
-  licenseVerified: boolean;
-  qualifications: string[];
-  yearsOfExperience: number;
-  specializations: string[];
-  phone: string;
-  clinicName: string;
-  clinicAddress: string;
-  consultationFee: number;
-  isAcceptingPatients: boolean;
-  rating: number;
-  totalReviews: number;
-}
-
-interface AdminProfile {
-  id: string;
-  name: string;
-  phone: string;
-}
-
-interface ProfileData {
-  user: User;
-  profile: PatientProfile | DoctorProfile | AdminProfile;
-}
-
-// Validation schemas
-const patientSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  age: yup.number().min(1, 'Age must be at least 1').max(120, 'Age must be less than 120').required('Age is required'),
-  gender: yup.string().required('Gender is required'),
-  phone: yup.string().required('Phone is required'),
-  address: yup.string().required('Address is required')
-});
-
-const doctorSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  qualifications: yup.array().of(yup.string()).min(1, 'At least one qualification is required'),
-  yearsOfExperience: yup.number().min(0, 'Experience cannot be negative').required('Experience is required'),
-  specializations: yup.array().of(yup.string()).min(1, 'At least one specialization is required'),
-  phone: yup.string().required('Phone is required'),
-  clinicName: yup.string().required('Clinic name is required'),
-  clinicAddress: yup.string().required('Clinic address is required'),
-  consultationFee: yup.number().min(0, 'Fee cannot be negative').required('Consultation fee is required'),
-  isAcceptingPatients: yup.boolean()
-});
-
-const adminSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  phone: yup.string().required('Phone is required')
-});
-
-export const ProfilePage: React.FC = () => {
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
-
-  // Get validation schema based on user role
-  const getValidationSchema = () => {
-    if (!profileData) return patientSchema;
-    
-    switch (profileData.user.role) {
-      case 'PATIENT':
-        return patientSchema;
-      case 'DOCTOR':
-        return doctorSchema;
-      case 'ADMIN':
-        return adminSchema;
-      default:
-        return patientSchema;
-    }
-  };
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-    watch
-  } = useForm({
-    resolver: yupResolver(getValidationSchema())
-  });
-
-  // Load profile data
   useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
-    try {
-      const response = await fetch('/api/v1/users/profile', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        
+        // Try to get more detailed user info from userStorage
+        const registeredUsers = userStorage.getAllUsers();
+        const detailedUser = registeredUsers.find(u => u.email === parsedUser.email);
+        
+        if (detailedUser) {
+          setUser({
+            ...parsedUser,
+            cpr: detailedUser.cpr,
+            status: detailedUser.status,
+            createdAt: detailedUser.createdAt
+          });
+        } else {
+          setUser(parsedUser);
         }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to load profile');
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        navigate(routes.login);
       }
-
-      const data = await response.json();
-      setProfileData(data.data);
-      
-      // Reset form with loaded data
-      if (data.data.profile) {
-        reset(data.data.profile);
-      }
-    } catch (error) {
-      toast.error('Failed to load profile');
-      console.error('Error loading profile:', error);
-    } finally {
-      setLoading(false);
+    } else {
+      navigate(routes.login);
     }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    showToast('Logged out successfully', 'success');
+    navigate(routes.home);
   };
 
-  // Update profile
-  const onSubmit = async (data: any) => {
-    if (!profileData) return;
+  const handleDeleteAccount = () => {
+    setShowDeleteConfirm(true);
+  };
 
-    setUpdating(true);
+  const confirmDeleteAccount = async () => {
+    if (!user) return;
+    
+    setIsDeleting(true);
+    
     try {
-      const endpoint = `/api/v1/users/profile/${profileData.user.role.toLowerCase()}`;
+      // Remove user from registered users
+      const registeredUsers = userStorage.getAllUsers();
+      const updatedUsers = registeredUsers.filter(u => u.email !== user.email);
+      localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
       
-      const response = await fetch(endpoint, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-
-      const result = await response.json();
-      setProfileData(prev => prev ? { ...prev, profile: result.data.profile } : null);
-      toast.success('Profile updated successfully');
+      // Clear all user data
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('redirectAfterLogin');
+      
+      showToast('Account deleted successfully', 'success');
+      
+      // Redirect to home after a short delay
+      setTimeout(() => {
+        navigate(routes.home);
+      }, 1500);
+      
     } catch (error) {
-      toast.error('Failed to update profile');
-      console.error('Error updating profile:', error);
-    } finally {
-      setUpdating(false);
+      console.error('Error deleting account:', error);
+      showToast('Failed to delete account. Please try again.', 'error');
+      setIsDeleting(false);
     }
   };
 
-  // Handle profile image upload
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || profileData?.user.role !== 'DOCTOR') return;
-
-    setUploadingImage(true);
-    try {
-      const formData = new FormData();
-      formData.append('profileImage', file);
-
-      const response = await fetch('/api/v1/users/profile/image', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      const result = await response.json();
-      
-      // Update profile data with new image URL
-      setProfileData(prev => {
-        if (prev && prev.user.role === 'DOCTOR') {
-          return {
-            ...prev,
-            profile: {
-              ...prev.profile as DoctorProfile,
-              profilePicture: result.data.fileUrl
-            }
-          };
-        }
-        return prev;
-      });
-
-      toast.success('Profile image updated successfully');
-    } catch (error) {
-      toast.error('Failed to upload image');
-      console.error('Error uploading image:', error);
-    } finally {
-      setUploadingImage(false);
-    }
+  const cancelDeleteAccount = () => {
+    setShowDeleteConfirm(false);
   };
 
-  // Handle array field changes (qualifications, specializations)
-  const handleArrayFieldChange = (fieldName: string, index: number, value: string) => {
-    const currentValues = watch(fieldName) || [];
-    const newValues = [...currentValues];
-    newValues[index] = value;
-    setValue(fieldName, newValues);
-  };
 
-  const addArrayField = (fieldName: string) => {
-    const currentValues = watch(fieldName) || [];
-    setValue(fieldName, [...currentValues, '']);
-  };
 
-  const removeArrayField = (fieldName: string, index: number) => {
-    const currentValues = watch(fieldName) || [];
-    const newValues = currentValues.filter((_: any, i: number) => i !== index);
-    setValue(fieldName, newValues);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
+  if (!user) {
+    return <div>Loading...</div>;
   }
-
-  if (!profileData) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Failed to load profile data</p>
-          <button
-            onClick={loadProfile}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const { user, profile } = profileData;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-            <div className="flex items-center gap-2">
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                user.isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-              }`}>
-                {user.isVerified ? 'Verified' : 'Unverified'}
-              </span>
-              <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {user.role}
-              </span>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      {/* Header */}
+      <div style={{
+        backgroundColor: 'white',
+        borderBottom: '1px solid #e5e7eb',
+        padding: '20px 0'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          {/* Logo and Title */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: '#0d9488',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <svg width="28" height="28" fill="white" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-4v-4h4v4zm0-6h-4V7h4v4z"/>
+              </svg>
+            </div>
+            <div>
+              <h1 style={{
+                fontSize: '24px',
+                fontWeight: '700',
+                color: '#111827',
+                margin: 0
+              }}>
+                PatientCare Profile
+              </h1>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                margin: 0
+              }}>
+                Manage your account
+              </p>
             </div>
           </div>
 
-          {/* Profile Image (Doctor only) */}
-          {user.role === 'DOCTOR' && (
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Profile Picture
-              </label>
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200">
-                  {(profile as DoctorProfile).profilePicture ? (
-                    <img
-                      src={(profile as DoctorProfile).profilePicture}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="profile-image-upload"
-                  />
-                  <label
-                    htmlFor="profile-image-upload"
-                    className={`px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 ${
-                      uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    {uploadingImage ? 'Uploading...' : 'Change Picture'}
-                  </label>
-                </div>
-              </div>
+          {/* User Info and Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{
+                fontSize: '16px',
+                fontWeight: '600',
+                color: '#111827',
+                margin: 0
+              }}>
+                {user.name}
+              </p>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                margin: 0
+              }}>
+                {user.userType === 'doctor' ? 'Doctor' : 'Patient'} • {user.email}
+              </p>
             </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Common fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  {...register('name')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone *
-                </label>
-                <input
-                  type="tel"
-                  {...register('phone')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                {errors.phone && (
-                  <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-                )}
-              </div>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: '#f0fdfa',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid #0d9488'
+            }}>
+              <span style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                color: '#0d9488'
+              }}>
+                {user.name.charAt(0).toUpperCase()}
+              </span>
             </div>
-
-            {/* Patient-specific fields */}
-            {user.role === 'PATIENT' && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Age *
-                    </label>
-                    <input
-                      type="number"
-                      {...register('age')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    {errors.age && (
-                      <p className="mt-1 text-sm text-red-600">{errors.age.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Gender *
-                    </label>
-                    <select
-                      {...register('gender')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
-                    {errors.gender && (
-                      <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address *
-                  </label>
-                  <textarea
-                    {...register('address')}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  {errors.address && (
-                    <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* Doctor-specific fields */}
-            {user.role === 'DOCTOR' && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Medical License Number
-                    </label>
-                    <input
-                      type="text"
-                      value={(profile as DoctorProfile).medicalLicenseNumber}
-                      disabled
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
-                    />
-                    <p className="mt-1 text-sm text-gray-500">
-                      License verification status: {(profile as DoctorProfile).licenseVerified ? 'Verified' : 'Pending'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Years of Experience *
-                    </label>
-                    <input
-                      type="number"
-                      {...register('yearsOfExperience')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    {errors.yearsOfExperience && (
-                      <p className="mt-1 text-sm text-red-600">{errors.yearsOfExperience.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Clinic Name *
-                    </label>
-                    <input
-                      type="text"
-                      {...register('clinicName')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    {errors.clinicName && (
-                      <p className="mt-1 text-sm text-red-600">{errors.clinicName.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Consultation Fee ($) *
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      {...register('consultationFee')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    {errors.consultationFee && (
-                      <p className="mt-1 text-sm text-red-600">{errors.consultationFee.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Clinic Address *
-                  </label>
-                  <textarea
-                    {...register('clinicAddress')}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  {errors.clinicAddress && (
-                    <p className="mt-1 text-sm text-red-600">{errors.clinicAddress.message}</p>
-                  )}
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    {...register('isAcceptingPatients')}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label className="ml-2 text-sm text-gray-700">
-                    Currently accepting new patients
-                  </label>
-                </div>
-              </>
-            )}
-
-            {/* Submit button */}
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={updating}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {updating ? 'Updating...' : 'Update Profile'}
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
+
+      {/* Main Content */}
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '40px 20px'
+      }}>
+        {/* Welcome Section */}
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '16px',
+          padding: '32px',
+          marginBottom: '32px',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+        }}>
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <h2 style={{
+              fontSize: '32px',
+              fontWeight: '700',
+              color: '#111827',
+              marginBottom: '8px'
+            }}>
+              Account Settings
+            </h2>
+            <p style={{
+              fontSize: '18px',
+              color: '#6b7280'
+            }}>
+              Manage your account information and preferences
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{
+            display: 'flex',
+            gap: '16px',
+            justifyContent: 'center',
+            flexWrap: 'wrap'
+          }}>
+            <Link
+              to={routes.dashboard}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: 'white',
+                color: '#0d9488',
+                border: '2px solid #0d9488',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                textDecoration: 'none',
+                transition: 'all 0.2s',
+                display: 'inline-block'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0fdfa';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'white';
+              }}
+            >
+              Back to Dashboard
+            </Link>
+            <Link
+              to={routes.home}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: 'white',
+                color: '#0d9488',
+                border: '2px solid #0d9488',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                textDecoration: 'none',
+                transition: 'all 0.2s',
+                display: 'inline-block'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0fdfa';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'white';
+              }}
+            >
+              Back to Home
+            </Link>
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        {/* Detailed User Information */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+          gap: '24px',
+          marginBottom: '32px'
+        }}>
+          {/* Personal Information */}
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: '#dbeafe',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <svg width="24" height="24" fill="#2563eb" viewBox="0 0 24 24">
+                  <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                </svg>
+              </div>
+              <h3 style={{
+                fontSize: '20px',
+                fontWeight: '700',
+                color: '#111827',
+                margin: 0
+              }}>
+                Personal Information
+              </h3>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  margin: '0 0 4px 0',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  fontWeight: '500'
+                }}>
+                  Full Name
+                </p>
+                <p style={{
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  color: '#111827',
+                  margin: 0
+                }}>
+                  {user.name}
+                </p>
+              </div>
+              <div>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  margin: '0 0 4px 0',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  fontWeight: '500'
+                }}>
+                  Email Address
+                </p>
+                <p style={{
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  color: '#111827',
+                  margin: 0
+                }}>
+                  {user.email}
+                </p>
+              </div>
+              {user.cpr && (
+                <div>
+                  <p style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    margin: '0 0 4px 0',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    fontWeight: '500'
+                  }}>
+                    CPR Number
+                  </p>
+                  <p style={{
+                    fontSize: '18px',
+                    fontWeight: '600',
+                    color: '#111827',
+                    margin: 0
+                  }}>
+                    {user.cpr}
+                  </p>
+                </div>
+              )}
+              <div>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  margin: '0 0 4px 0',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  fontWeight: '500'
+                }}>
+                  Account Type
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    backgroundColor: user.userType === 'doctor' ? '#dcfce7' : '#dbeafe',
+                    color: user.userType === 'doctor' ? '#166534' : '#1e40af'
+                  }}>
+                    {user.userType === 'doctor' ? 'Healthcare Provider' : 'Patient'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Account Status & Security */}
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: '#dcfce7',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <svg width="24" height="24" fill="#16a34a" viewBox="0 0 24 24">
+                  <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11.5C15.4,11.5 16,12.4 16,13V16C16,16.6 15.6,17 15,17H9C8.4,17 8,16.6 8,16V13C8,12.4 8.4,11.5 9,11.5V10C9,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.2,8.7 10.2,10V11.5H13.8V10C13.8,8.7 12.8,8.2 12,8.2Z"/>
+                </svg>
+              </div>
+              <h3 style={{
+                fontSize: '20px',
+                fontWeight: '700',
+                color: '#111827',
+                margin: 0
+              }}>
+                Account Status
+              </h3>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  margin: '0 0 4px 0',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  fontWeight: '500'
+                }}>
+                  Status
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    backgroundColor: user.status === 'verified' || user.status === 'active' ? '#dcfce7' : '#fef3c7',
+                    color: user.status === 'verified' || user.status === 'active' ? '#166534' : '#92400e'
+                  }}>
+                    {user.status === 'verified' ? '✅ Verified' : 
+                     user.status === 'active' ? '✅ Active' : 
+                     user.status === 'pending_verification' ? '⏳ Pending Verification' : '✅ Active'}
+                  </span>
+                </div>
+              </div>
+              {user.createdAt && (
+                <div>
+                  <p style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    margin: '0 0 4px 0',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    fontWeight: '500'
+                  }}>
+                    Member Since
+                  </p>
+                  <p style={{
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    color: '#111827',
+                    margin: 0
+                  }}>
+                    {new Date(user.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                </div>
+              )}
+              <div>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  margin: '0 0 4px 0',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  fontWeight: '500'
+                }}>
+                  Security
+                </p>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#16a34a',
+                  fontWeight: '500',
+                  margin: 0
+                }}>
+                  🔒 Account Secured
+                </p>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  margin: '4px 0 0 0'
+                }}>
+                  Your data is protected with enterprise-grade security
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '16px',
+          padding: '32px',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          border: '1px solid #fecaca',
+          marginBottom: '32px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: '#fef2f2',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <svg width="24" height="24" fill="#ef4444" viewBox="0 0 24 24">
+                <path d="M12,2C13.1,2 14,2.9 14,4C14,5.1 13.1,6 12,6C10.9,6 10,5.1 10,4C10,2.9 10.9,2 12,2M21,9V7L15,1H5C3.89,1 3,1.89 3,3V21C3,22.11 3.89,23 5,23H19C20.11,23 21,22.11 21,21V9M19,9H14V4H5V21H19V9Z"/>
+              </svg>
+            </div>
+            <h3 style={{
+              fontSize: '20px',
+              fontWeight: '700',
+              color: '#dc2626',
+              margin: 0
+            }}>
+              Danger Zone
+            </h3>
+          </div>
+          <div style={{
+            padding: '20px',
+            backgroundColor: '#fef2f2',
+            borderRadius: '8px',
+            border: '1px solid #fecaca'
+          }}>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              color: '#dc2626',
+              margin: '0 0 8px 0'
+            }}>
+              Delete Account
+            </h4>
+            <p style={{
+              fontSize: '14px',
+              color: '#7f1d1d',
+              margin: '0 0 16px 0',
+              lineHeight: '1.5'
+            }}>
+              Once you delete your account, there is no going back. This will permanently delete your account, 
+              all your medical records, appointments, and remove all associated data from our servers.
+            </p>
+            <button
+              onClick={handleDeleteAccount}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#dc2626',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#b91c1c';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#dc2626';
+              }}
+            >
+              Delete Account
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '24px'
+            }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: '#fef2f2',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <svg width="24" height="24" fill="#ef4444" viewBox="0 0 24 24">
+                  <path d="M12,2C13.1,2 14,2.9 14,4C14,5.1 13.1,6 12,6C10.9,6 10,5.1 10,4C10,2.9 10.9,2 12,2M21,9V7L15,1H5C3.89,1 3,1.89 3,3V21C3,22.11 3.89,23 5,23H19C20.11,23 21,22.11 21,21V9M19,9H14V4H5V21H19V9Z"/>
+                </svg>
+              </div>
+              <h3 style={{
+                fontSize: '24px',
+                fontWeight: '700',
+                color: '#dc2626',
+                margin: 0
+              }}>
+                Delete Account
+              </h3>
+            </div>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <p style={{
+                fontSize: '16px',
+                color: '#374151',
+                margin: '0 0 16px 0',
+                lineHeight: '1.6'
+              }}>
+                Are you sure you want to delete your account? This action cannot be undone.
+              </p>
+              <div style={{
+                padding: '16px',
+                backgroundColor: '#fef2f2',
+                borderRadius: '8px',
+                border: '1px solid #fecaca',
+                marginBottom: '16px'
+              }}>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#7f1d1d',
+                  margin: 0,
+                  lineHeight: '1.5'
+                }}>
+                  <strong>This will permanently delete:</strong><br/>
+                  • Your account and profile information<br/>
+                  • All medical records and history<br/>
+                  • Appointment history and bookings<br/>
+                  • All associated data from our servers
+                </p>
+              </div>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                margin: 0
+              }}>
+                If you're sure you want to proceed, click "Yes, Delete Account" below.
+              </p>
+            </div>
+
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              justifyContent: 'flex-end'
+            }}>
+              <button
+                onClick={cancelDeleteAccount}
+                disabled={isDeleting}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: 'white',
+                  color: '#374151',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: isDeleting ? 'not-allowed' : 'pointer',
+                  opacity: isDeleting ? 0.5 : 1,
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isDeleting) {
+                    e.currentTarget.style.backgroundColor = '#f9fafb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isDeleting) {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteAccount}
+                disabled={isDeleting}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: isDeleting ? '#9ca3af' : '#dc2626',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: isDeleting ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isDeleting) {
+                    e.currentTarget.style.backgroundColor = '#b91c1c';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isDeleting) {
+                    e.currentTarget.style.backgroundColor = '#dc2626';
+                  }
+                }}
+              >
+                {isDeleting ? (
+                  <>
+                    <div style={{
+                      width: '16px',
+                      height: '16px',
+                      border: '2px solid #ffffff',
+                      borderTop: '2px solid transparent',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }}></div>
+                    Deleting...
+                  </>
+                ) : (
+                  'Yes, Delete Account'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add spinning animation */}
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
 };
+
+export default ProfilePage;

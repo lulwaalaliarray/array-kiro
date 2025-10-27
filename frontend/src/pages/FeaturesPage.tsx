@@ -1,5 +1,6 @@
 import React from 'react';
 import Layout from '../components/Layout';
+import { scrollToTop } from '../utils/scrollUtils';
 
 const FeaturesPage: React.FC = () => {
   const features = [
@@ -187,25 +188,27 @@ const FeaturesPage: React.FC = () => {
             justifyContent: 'center',
             flexWrap: 'wrap'
           }}>
-            <button style={{
-              padding: '12px 32px',
-              background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(13, 148, 136, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}>
+            <button 
+              onClick={scrollToTop}
+              style={{
+                padding: '12px 32px',
+                background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(13, 148, 136, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}>
               Get Started Free
             </button>
             <button style={{
