@@ -1,0 +1,357 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User roles enum
+enum UserRole {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+// Appointment status enum
+enum AppointmentStatus {
+  AWAITING_ACCEPTANCE
+  REJECTED
+  PAYMENT_PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+// Payment status enum
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Appointment type enum
+enum AppointmentType {
+  ONLINE
+  PHYSICAL
+}
+
+// Base User model
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      UserRole
+  isVerified Boolean @default(false)
+  isActive   Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  patientProfile         PatientProfile?
+  doctorProfile          DoctorProfile?
+  adminProfile           AdminProfile?
+  notifications          Notification[]
+  notificationPreference NotificationPreference?
+
+  @@index([email])
+  @@index([role])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("users")
+}
+
+// Patient profile
+model PatientProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  name   String
+  age    Int
+  gender String
+  phone  String
+  address String
+
+  // Relationships
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  medicalDocs  MedicalDocument[]
+  reviews      Review[]
+
+  @@index([name])
+  @@index([phone])
+  @@map("patient_profiles")
+}
+
+// Doctor profile
+model DoctorProfile {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  name                  String
+  profilePicture        String?
+  medicalLicenseNumber  String   @unique
+  licenseVerified       Boolean  @default(false)
+  qualifications        String[]
+  yearsOfExperience     Int
+  specializations       String[]
+  phone                 String
+  clinicName            String
+  clinicAddress         String
+  consultationFee       Decimal
+  isAcceptingPatients   Boolean  @default(true)
+  rating                Decimal  @default(0)
+  totalReviews          Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relationships
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  reviews      Review[]
+
+  @@index([name])
+  @@index([specializations])
+  @@index([licenseVerified])
+  @@index([isAcceptingPatients])
+  @@index([rating])
+  @@index([clinicAddress])
+  @@map("doctor_profiles")
+}
+
+// Admin profile
+model AdminProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  name   String
+  phone  String
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admin_profiles")
+}
+
+// Appointment model
+model Appointment {
+  id                String            @id @default(uuid())
+  patientId         String
+  doctorId          String
+  scheduledDateTime DateTime
+  type              AppointmentType
+  status            AppointmentStatus @default(AWAITING_ACCEPTANCE)
+  paymentStatus     PaymentStatus     @default(PENDING)
+  zoomMeetingId     String?
+  notes             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relationships
+  patient     PatientProfile @relation(fields: [patientId], references: [id])
+  doctor      DoctorProfile  @relation(fields: [doctorId], references: [id])
+  payment     Payment?
+  review      Review?
+  zoomMeeting ZoomMeeting?
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([scheduledDateTime])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@map("appointments")
+}
+
+// Payment model
+model Payment {
+  id            String        @id @default(uuid())
+  appointmentId String        @unique
+  amount        Decimal
+  currency      String        @default("USD")
+  status        PaymentStatus @default(PENDING)
+  stripePaymentIntentId String?
+  processedAt   DateTime?
+  refundedAt    DateTime?
+  refundReason  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relationships
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+
+  @@index([status])
+  @@index([processedAt])
+  @@index([createdAt])
+  @@map("payments")
+}
+
+// Document type enum
+enum DocumentType {
+  LAB_REPORT
+  PRESCRIPTION
+  SCAN
+  OTHER
+}
+
+// Medical document model
+model MedicalDocument {
+  id           String       @id @default(uuid())
+  patientId    String
+  fileName     String
+  fileUrl      String
+  fileType     String
+  documentType DocumentType @default(OTHER)
+  description  String?
+  uploadedAt   DateTime     @default(now())
+
+  // Relationships
+  patient PatientProfile @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([fileType])
+  @@index([documentType])
+  @@index([uploadedAt])
+  @@map("medical_documents")
+}
+
+// Review model
+model Review {
+  id            String   @id @default(uuid())
+  appointmentId String   @unique
+  patientId     String
+  doctorId      String
+  rating        Int      // 1-5 stars
+  comment       String?
+  createdAt     DateTime @default(now())
+
+  // Relationships
+  appointment Appointment    @relation(fields: [appointmentId], references: [id])
+  patient     PatientProfile @relation(fields: [patientId], references: [id])
+  doctor      DoctorProfile  @relation(fields: [doctorId], references: [id])
+
+  @@map("reviews")
+}
+
+// Zoom meeting model
+model ZoomMeeting {
+  id            String   @id @default(uuid())
+  appointmentId String   @unique
+  zoomMeetingId String   @unique
+  topic         String
+  startTime     DateTime
+  duration      Int      // in minutes
+  hostUrl       String
+  joinUrl       String
+  password      String
+  status        String   @default("scheduled")
+  hostEmail     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+
+  @@index([appointmentId])
+  @@index([zoomMeetingId])
+  @@index([status])
+  @@index([startTime])
+  @@map("zoom_meetings")
+}
+
+// Notification type enum
+enum NotificationType {
+  APPOINTMENT_BOOKED
+  APPOINTMENT_ACCEPTED
+  APPOINTMENT_REJECTED
+  PAYMENT_CONFIRMED
+  APPOINTMENT_REMINDER
+  MEETING_LINK_READY
+  APPOINTMENT_CANCELLED
+  APPOINTMENT_RESCHEDULED
+  DOCTOR_VERIFIED
+  DOCTOR_REJECTED
+}
+
+// Notification channel enum
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+}
+
+// Notification status enum
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  READ
+}
+
+// Notification model
+model Notification {
+  id        String             @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?              // Additional notification data
+  channels  NotificationChannel[]
+  status    NotificationStatus @default(PENDING)
+  scheduledAt DateTime?        // For scheduled notifications
+  sentAt    DateTime?
+  readAt    DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// Notification preferences model
+model NotificationPreference {
+  id                    String                @id @default(uuid())
+  userId                String                @unique
+  emailEnabled          Boolean               @default(true)
+  pushEnabled           Boolean               @default(true)
+  inAppEnabled          Boolean               @default(true)
+  appointmentReminders  Boolean               @default(true)
+  appointmentUpdates    Boolean               @default(true)
+  paymentNotifications  Boolean               @default(true)
+  marketingEmails       Boolean               @default(false)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+// Scheduled job model for reminders
+model ScheduledJob {
+  id          String    @id @default(uuid())
+  type        String    // 'appointment_reminder'
+  entityId    String    // appointment ID
+  scheduledAt DateTime
+  status      String    @default("pending") // pending, completed, cancelled
+  data        Json?     // Job-specific data
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([type])
+  @@index([scheduledAt])
+  @@index([status])
+  @@index([entityId])
+  @@map("scheduled_jobs")
+}
