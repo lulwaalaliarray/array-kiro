@@ -1,26 +1,81 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { newsletterStorage } from '../utils/newsletterStorage';
+import { routes } from '../utils/navigation';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
+
+  // Handle newsletter subscription
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      setMessage('Please enter your email address');
+      setMessageType('error');
+      return;
+    }
+
+    if (!newsletterStorage.isValidEmail(email)) {
+      setMessage('Please enter a valid email address');
+      setMessageType('error');
+      return;
+    }
+
+    if (newsletterStorage.isEmailSubscribed(email)) {
+      setMessage('This email is already subscribed to our newsletter');
+      setMessageType('error');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setMessage('');
+
+    // Simulate API call
+    setTimeout(() => {
+      const success = newsletterStorage.addSubscription(email);
+      
+      if (success) {
+        setMessage('Successfully subscribed! Thank you for joining our newsletter.');
+        setMessageType('success');
+        setEmail('');
+      } else {
+        setMessage('Failed to subscribe. Please try again.');
+        setMessageType('error');
+      }
+      
+      setIsSubmitting(false);
+      
+      // Clear message after 5 seconds
+      setTimeout(() => {
+        setMessage('');
+        setMessageType('');
+      }, 5000);
+    }, 1000);
+  };
 
   const footerLinks = {
     product: [
-      { name: 'Features', href: '#features' },
-      { name: 'Find Doctors', href: '#doctors' },
-      { name: 'Pricing', href: '#pricing' },
-      { name: 'Security', href: '#security' }
+      { name: 'Features', href: routes.features },
+      { name: 'Find Doctors', href: routes.findDoctors },
+      { name: 'Pricing', href: routes.pricing },
+      { name: 'Security', href: routes.security }
     ],
     company: [
-      { name: 'About Us', href: '#about' },
-      { name: 'Careers', href: '#careers' },
-      { name: 'Press', href: '#press' },
-      { name: 'Blog', href: '#blog' }
+      { name: 'About Us', href: routes.about },
+      { name: 'Careers', href: routes.careers },
+      { name: 'Press', href: routes.press },
+      { name: 'Blog', href: routes.blog }
     ],
     support: [
-      { name: 'Help Center', href: '#help' },
-      { name: 'Contact Us', href: '#contact' },
-      { name: 'Privacy Policy', href: '#privacy' },
-      { name: 'Terms of Service', href: '#terms' }
+      { name: 'Help Center', href: routes.help },
+      { name: 'Contact Us', href: routes.contact },
+      { name: 'Privacy Policy', href: routes.privacy },
+      { name: 'Terms of Service', href: routes.terms }
     ]
   };
 
@@ -120,8 +175,8 @@ const Footer: React.FC = () => {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {footerLinks.product.map((link) => (
                 <li key={link.name} style={{ marginBottom: '12px' }}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     style={{
                       color: '#9ca3af',
                       textDecoration: 'none',
@@ -136,7 +191,7 @@ const Footer: React.FC = () => {
                     }}
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -155,8 +210,8 @@ const Footer: React.FC = () => {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {footerLinks.company.map((link) => (
                 <li key={link.name} style={{ marginBottom: '12px' }}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     style={{
                       color: '#9ca3af',
                       textDecoration: 'none',
@@ -171,7 +226,7 @@ const Footer: React.FC = () => {
                     }}
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -190,8 +245,8 @@ const Footer: React.FC = () => {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {footerLinks.support.map((link) => (
                 <li key={link.name} style={{ marginBottom: '12px' }}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     style={{
                       color: '#9ca3af',
                       textDecoration: 'none',
@@ -206,7 +261,7 @@ const Footer: React.FC = () => {
                     }}
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -236,49 +291,126 @@ const Footer: React.FC = () => {
           }}>
             Get the latest health tips for Bahrain's climate, product updates, and exclusive offers for Kingdom residents.
           </p>
-          <div style={{
-            display: 'flex',
-            flexDirection: window.innerWidth >= 640 ? 'row' : 'column',
-            gap: '12px',
+          
+          <form onSubmit={handleSubscribe} style={{
             maxWidth: '400px',
             margin: '0 auto'
           }}>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              style={{
-                flex: 1,
+            <div style={{
+              display: 'flex',
+              flexDirection: window.innerWidth >= 640 ? 'row' : 'column',
+              gap: '12px',
+              marginBottom: message ? '16px' : '0'
+            }}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                disabled={isSubmitting}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: `1px solid ${messageType === 'error' ? '#ef4444' : '#374151'}`,
+                  backgroundColor: isSubmitting ? '#1f2937' : '#111827',
+                  color: 'white',
+                  fontSize: '14px',
+                  transition: 'all 0.2s',
+                  opacity: isSubmitting ? 0.7 : 1
+                }}
+                onFocus={(e) => {
+                  if (messageType !== 'error') {
+                    e.target.style.borderColor = '#0d9488';
+                  }
+                }}
+                onBlur={(e) => {
+                  if (messageType !== 'error') {
+                    e.target.style.borderColor = '#374151';
+                  }
+                }}
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: isSubmitting ? '#6b7280' : '#0d9488',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  minWidth: '120px'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSubmitting) {
+                    e.currentTarget.style.backgroundColor = '#0f766e';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSubmitting) {
+                    e.currentTarget.style.backgroundColor = '#0d9488';
+                  }
+                }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div style={{
+                      width: '16px',
+                      height: '16px',
+                      border: '2px solid #ffffff',
+                      borderTop: '2px solid transparent',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }}></div>
+                    Subscribing...
+                  </>
+                ) : (
+                  'Subscribe'
+                )}
+              </button>
+            </div>
+            
+            {/* Message Display */}
+            {message && (
+              <div style={{
                 padding: '12px 16px',
                 borderRadius: '8px',
-                border: '1px solid #374151',
-                backgroundColor: '#111827',
-                color: 'white',
-                fontSize: '14px'
-              }}
-            />
-            <button
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#0d9488',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#0f766e';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#0d9488';
-              }}
-            >
-              Subscribe
-            </button>
-          </div>
+                backgroundColor: messageType === 'success' ? '#065f46' : '#7f1d1d',
+                border: `1px solid ${messageType === 'success' ? '#10b981' : '#ef4444'}`,
+                color: messageType === 'success' ? '#d1fae5' : '#fecaca',
+                fontSize: '14px',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: '16px' }}>
+                  {messageType === 'success' ? '✅' : '❌'}
+                </span>
+                {message}
+              </div>
+            )}
+          </form>
         </div>
+
+        {/* Add spinning animation */}
+        <style>
+          {`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}
+        </style>
 
         {/* Bottom Bar */}
         <div style={{

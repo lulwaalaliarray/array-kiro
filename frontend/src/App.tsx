@@ -9,16 +9,26 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import { isLoggedIn } from './utils/navigation';
 
-// Placeholder components for routes
-const AboutPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>About PatientCare</h2><p>Learn more about our healthcare platform for Bahrain.</p></div>;
-const ContactPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>Contact Us</h2><p>Get in touch with our support team.</p></div>;
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+import FeaturesPage from './pages/FeaturesPage';
+import FindDoctorsPage from './pages/FindDoctorsPage';
+import PricingPage from './pages/PricingPage';
+import SecurityPage from './pages/SecurityPage';
+import CareersPage from './pages/CareersPage';
+import PressPage from './pages/PressPage';
+import BlogPage from './pages/BlogPage';
+import HelpPage from './pages/HelpPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+
 const AppointmentsPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>My Appointments</h2><p>Manage your medical appointments here.</p></div>;
 const ChatPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>Chat with Doctor</h2><p>Secure messaging with healthcare providers.</p></div>;
 const RecordsPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>Medical Records</h2><p>Access your health records and prescriptions.</p></div>;
 const SupportPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>Support Center</h2><p>Get help with PatientCare platform.</p></div>;
 
 function App(): JSX.Element {
-  const [user, setUser] = useState<{ name: string; avatar?: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; email?: string; userType?: string; avatar?: string } | null>(null);
 
   // Check for existing authentication on app load
   useEffect(() => {
@@ -46,6 +56,22 @@ function App(): JSX.Element {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/support" element={<SupportPage />} />
+          
+          {/* Product Pages */}
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/find-doctors" element={<FindDoctorsPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/security" element={<SecurityPage />} />
+          
+          {/* Company Pages */}
+          <Route path="/careers" element={<CareersPage />} />
+          <Route path="/press" element={<PressPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          
+          {/* Support Pages */}
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           
           {/* Protected Routes */}
           <Route path="/doctors" element={

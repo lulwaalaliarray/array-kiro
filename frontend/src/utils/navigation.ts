@@ -42,5 +42,18 @@ export const routes = {
   records: '/records',
   doctors: '/doctors',
   dashboard: '/dashboard',
-  profile: '/profile'
+  profile: '/profile',
+  // Product pages
+  features: '/features',
+  findDoctors: '/find-doctors',
+  pricing: '/pricing',
+  security: '/security',
+  // Company pages
+  careers: '/careers',
+  press: '/press',
+  blog: '/blog',
+  // Support pages
+  help: '/help',
+  privacy: '/privacy',
+  terms: '/terms'
 } as const;

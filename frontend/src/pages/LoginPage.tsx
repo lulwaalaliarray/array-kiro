@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../components/Toast';
 import { routes } from '../utils/navigation';
+import { userStorage, initializeDemoUsers } from '../utils/userStorage';
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,14 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
+
+  // Initialize demo users on component mount
+  useEffect(() => {
+    initializeDemoUsers();
+  }, []);
+
+  // Get user statistics for display
+  const userStats = userStorage.getUserCount();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -32,28 +41,24 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      // Mock login - replace with actual API call
-      const validCredentials = {
-        patient: { email: 'patient@patientcare.bh', password: 'password', name: 'Sarah Al-Khalifa' },
-        doctor: { email: 'doctor@patientcare.bh', password: 'doctor123', name: 'Dr. Ahmed Al-Mansouri' }
-      };
+      // Find user with matching credentials
+      const user = userStorage.findUser(formData.email, formData.password, formData.userType);
 
-      const credentials = validCredentials[formData.userType as keyof typeof validCredentials];
+      if (user) {
+        // Check if doctor account is verified
+        if (user.userType === 'doctor' && user.status === 'pending_verification') {
+          showToast('Your doctor account is still under review. Please wait for verification.', 'info');
+          setIsLoading(false);
+          return;
+        }
 
-      if (formData.email === credentials.email && formData.password === credentials.password) {
         // Store auth data
         localStorage.setItem('authToken', 'mock-jwt-token');
-        localStorage.setItem('userData', JSON.stringify({
-          id: formData.userType === 'patient' ? '1' : '2',
-          name: credentials.name,
-          email: formData.email,
-          userType: formData.userType,
-          status: formData.userType === 'doctor' ? 'verified' : 'active'
-        }));
+        localStorage.setItem('userData', JSON.stringify(user));
 
-        const welcomeMessage = formData.userType === 'patient'
-          ? 'Welcome back to PatientCare!'
-          : 'Welcome back, Doctor!';
+        const welcomeMessage = user.userType === 'patient'
+          ? `Welcome back, ${user.name}!`
+          : `Welcome back, Dr. ${user.name}!`;
 
         showToast(welcomeMessage, 'success');
 
@@ -63,7 +68,7 @@ const LoginPage: React.FC = () => {
 
         navigate(redirectTo);
       } else {
-        showToast('Invalid credentials for selected account type', 'error');
+        showToast('Invalid email or password for selected account type', 'error');
       }
     } catch (error) {
       showToast('Login failed. Please try again.', 'error');
@@ -317,6 +322,26 @@ const LoginPage: React.FC = () => {
               </p>
             )}
           </div>
+
+          {/* User Statistics */}
+          {userStats.total > 2 && (
+            <div style={{
+              marginTop: '16px',
+              padding: '12px',
+              backgroundColor: '#f8fafc',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0'
+            }}>
+              <p style={{
+                fontSize: '12px',
+                color: '#64748b',
+                textAlign: 'center',
+                margin: 0
+              }}>
+                📊 {userStats.total} registered users ({userStats.patients} patients, {userStats.doctors} doctors)
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Sign Up Link */}

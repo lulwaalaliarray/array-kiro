@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../components/Toast';
 import { routes } from '../utils/navigation';
+import { userStorage, User } from '../utils/userStorage';
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -70,28 +71,57 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      // Mock signup - replace with actual API call
-      const userData = {
+      // Check if user already exists
+      if (userStorage.userExists(formData.email)) {
+        showToast('An account with this email already exists', 'error');
+        setIsLoading(false);
+        return;
+      }
+
+      // Create user credentials object
+      const newUser: User = {
         id: Date.now().toString(),
         name: formData.name,
         email: formData.email,
-        userType: formData.userType,
+        password: formData.password, // In real app, this would be hashed
+        userType: formData.userType as 'patient' | 'doctor',
         cpr: formData.cpr,
-        status: formData.userType === 'doctor' ? 'pending_verification' : 'active'
+        status: formData.userType === 'doctor' ? 'pending_verification' : 'active',
+        createdAt: new Date().toISOString()
       };
 
-      // Store auth data
-      localStorage.setItem('authToken', 'mock-jwt-token');
-      localStorage.setItem('userData', JSON.stringify(userData));
+      // Store user credentials
+      const success = userStorage.addUser(newUser);
+      
+      if (!success) {
+        showToast('Failed to create account. Please try again.', 'error');
+        setIsLoading(false);
+        return;
+      }
 
+      // Show success message
       if (formData.userType === 'doctor') {
-        showToast('Account created! Your certification is under review. You will be notified once approved.', 'info');
+        showToast('Account created successfully! Your certification is under review. Please log in to continue.', 'success');
       } else {
-        showToast('Account created successfully! Welcome to PatientCare!', 'success');
+        showToast('Account created successfully! Please log in to access your account.', 'success');
       }
       
-      // Redirect to dashboard
-      navigate(routes.dashboard);
+      // Clear form data
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        userType: 'patient',
+        cpr: '',
+        certification: null
+      });
+
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        navigate(routes.login);
+      }, 1500);
+      
     } catch (error) {
       showToast('Registration failed. Please try again.', 'error');
     } finally {
