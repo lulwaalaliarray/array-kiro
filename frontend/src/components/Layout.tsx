@@ -232,26 +232,45 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle }) => {
               // Authenticated user profile
               <div style={{ position: 'relative' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#111827',
-                      margin: 0
-                    }}>
-                      {user.name}
-                    </p>
-                    <p style={{
-                      fontSize: '12px',
-                      color: '#6b7280',
-                      margin: 0
-                    }}>
-                      {user.userType === 'doctor' ? 'Doctor' : 'Patient'}
-                    </p>
-                  </div>
                   <button
-                    onClick={() => setShowDropdown(!showDropdown)}
+                    onClick={() => navigate(routes.profile)}
                     style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      borderRadius: '8px',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f0fdfa';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                    title="Click to view profile"
+                  >
+                    <div style={{ textAlign: 'right' }}>
+                      <p style={{
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        color: '#111827',
+                        margin: 0
+                      }}>
+                        {user.name}
+                      </p>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        margin: 0
+                      }}>
+                        {user.userType === 'doctor' ? 'Doctor' : 'Patient'}
+                      </p>
+                    </div>
+                    <div style={{
                       width: '40px',
                       height: '40px',
                       backgroundColor: '#f0fdfa',
@@ -260,25 +279,41 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle }) => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      cursor: 'pointer',
                       transition: 'all 0.2s'
+                    }}>
+                      <span style={{
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        color: '#0d9488'
+                      }}>
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      borderRadius: '4px',
+                      transition: 'all 0.2s',
+                      color: '#6b7280'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#0d9488';
-                      e.currentTarget.style.color = 'white';
-                    }}
-                    onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = '#f0fdfa';
                       e.currentTarget.style.color = '#0d9488';
                     }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = '#6b7280';
+                    }}
+                    title="Open menu"
                   >
-                    <span style={{
-                      fontSize: '16px',
-                      fontWeight: '600',
-                      color: '#0d9488'
-                    }}>
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M7 10l5 5 5-5z"/>
+                    </svg>
                   </button>
                 </div>
 
