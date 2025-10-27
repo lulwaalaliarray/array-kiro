@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './components/Toast';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -13,18 +13,22 @@ import { isLoggedIn } from './utils/navigation';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import FeaturesPage from './pages/FeaturesPage';
-import FindDoctorsPage from './pages/FindDoctorsPage';
 import PricingPage from './pages/PricingPage';
 import SecurityPage from './pages/SecurityPage';
 import CareersPage from './pages/CareersPage';
 import PressPage from './pages/PressPage';
 import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
+import CreateBlogPage from './pages/CreateBlogPage';
 import HelpPage from './pages/HelpPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import ProfilePage from './pages/ProfilePage';
+import UpcomingAppointments from './components/UpcomingAppointments';
+import ManageAvailability from './components/ManageAvailability';
+import WritePrescription from './components/WritePrescription';
 
-const AppointmentsPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>My Appointments</h2><p>Manage your medical appointments here.</p></div>;
+
 const ChatPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>Chat with Doctor</h2><p>Secure messaging with healthcare providers.</p></div>;
 const RecordsPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>Medical Records</h2><p>Access your health records and prescriptions.</p></div>;
 const SupportPage = () => <div style={{ padding: '40px', textAlign: 'center' }}><h2>Support Center</h2><p>Get help with PatientCare platform.</p></div>;
@@ -62,7 +66,8 @@ function App(): JSX.Element {
           
           {/* Product Pages */}
           <Route path="/features" element={<FeaturesPage />} />
-          <Route path="/find-doctors" element={<FindDoctorsPage />} />
+          <Route path="/find-doctors" element={<FindDoctors />} />
+          <Route path="/doctors" element={<FindDoctors />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/security" element={<SecurityPage />} />
           
@@ -70,21 +75,30 @@ function App(): JSX.Element {
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/press" element={<PressPage />} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:id" element={<BlogPostPage />} />
+          <Route path="/blog/create" element={
+            <ProtectedRoute message="Please log in as a doctor to create blog posts">
+              <CreateBlogPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/manage-availability" element={
+            <ProtectedRoute message="Please log in as a doctor to manage availability">
+              <ManageAvailability />
+            </ProtectedRoute>
+          } />
+          <Route path="/write-prescription" element={
+            <ProtectedRoute message="Please log in as a doctor to write prescriptions">
+              <WritePrescription />
+            </ProtectedRoute>
+          } />
           
           {/* Support Pages */}
           <Route path="/help" element={<HelpPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
-          
-          {/* Protected Routes */}
-          <Route path="/doctors" element={
-            <ProtectedRoute message="Please log in to find doctors">
-              <FindDoctors />
-            </ProtectedRoute>
-          } />
           <Route path="/appointments" element={
             <ProtectedRoute message="Please log in to view your appointments">
-              <AppointmentsPage />
+              <UpcomingAppointments />
             </ProtectedRoute>
           } />
           <Route path="/chat" element={

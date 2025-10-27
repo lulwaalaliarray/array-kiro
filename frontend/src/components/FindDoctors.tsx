@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { routes } from '../utils/navigation';
+import { routes, isLoggedIn } from '../utils/navigation';
 import { useToast } from './Toast';
+import { userStorage, User } from '../utils/userStorage';
 import Header from './Header';
 import Footer from './Footer';
 import DoctorCard from './DoctorCard';
@@ -13,18 +14,55 @@ const FindDoctors: React.FC = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [sortBy, setSortBy] = useState('rating');
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
+  const [doctors, setDoctors] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const specialties = [
-    'All Specialties',
-    'Cardiology',
-    'Dermatology',
-    'Pediatrics',
-    'Neurology',
-    'Orthopedics',
-    'Psychiatry',
-    'General Medicine',
-    'Gynecology',
-    'Ophthalmology'
+  // Check authentication status and load doctors
+  useEffect(() => {
+    setUserLoggedIn(isLoggedIn());
+    loadDoctors();
+  }, []);
+
+  const loadDoctors = () => {
+    try {
+      const allUsers = userStorage.getAllUsers();
+      const registeredDoctors = allUsers.filter(user => 
+        user.userType === 'doctor' && 
+        user.status === 'active' && 
+        user.specialization
+      );
+      setDoctors(registeredDoctors);
+    } catch (error) {
+      console.error('Error loading doctors:', error);
+      showToast('Error loading doctors', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get unique specialties from registered doctors
+  const getSpecialties = () => {
+    const uniqueSpecialties = [...new Set(doctors.map(doctor => doctor.specialization).filter(Boolean))];
+    return ['All Specialties', ...uniqueSpecialties.sort()];
+  };
+
+  const specialties = getSpecialties();
+
+  const locations = [
+    'All Locations',
+    'Manama',
+    'Muharraq',
+    'Riffa',
+    'Hamad Town',
+    'A\'ali',
+    'Isa Town',
+    'Sitra',
+    'Budaiya',
+    'Jidhafs',
+    'Tubli',
+    'Sanabis',
+    'Adliya'
   ];
 
   const mockDoctors = [
@@ -41,7 +79,8 @@ const FindDoctors: React.FC = () => {
       nextAvailable: 'Today 2:30 PM',
       languages: ['Arabic', 'English'],
       education: 'MD, King Faisal University',
-      hospital: 'Bahrain Specialist Hospital'
+      hospital: 'Bahrain Specialist Hospital',
+      location: 'Manama'
     },
     {
       id: '2',
@@ -56,7 +95,8 @@ const FindDoctors: React.FC = () => {
       nextAvailable: 'Tomorrow 10:00 AM',
       languages: ['Arabic', 'English'],
       education: 'MD, Arabian Gulf University',
-      hospital: 'Salmaniya Medical Complex'
+      hospital: 'Salmaniya Medical Complex',
+      location: 'Manama'
     },
     {
       id: '3',
@@ -71,7 +111,8 @@ const FindDoctors: React.FC = () => {
       nextAvailable: 'Today 4:00 PM',
       languages: ['Arabic', 'English'],
       education: 'MD, University of Bahrain',
-      hospital: 'King Hamad University Hospital'
+      hospital: 'King Hamad University Hospital',
+      location: 'Muharraq'
     },
     {
       id: '4',
@@ -86,7 +127,8 @@ const FindDoctors: React.FC = () => {
       nextAvailable: 'Monday 9:00 AM',
       languages: ['Arabic', 'English'],
       education: 'MD, PhD, Johns Hopkins (USA)',
-      hospital: 'Royal Bahrain Hospital'
+      hospital: 'Royal Bahrain Hospital',
+      location: 'Riffa'
     },
     {
       id: '5',
@@ -101,7 +143,8 @@ const FindDoctors: React.FC = () => {
       nextAvailable: 'Today 1:00 PM',
       languages: ['Arabic', 'English'],
       education: 'MD, Arabian Gulf University',
-      hospital: 'Ibn Al-Nafees Hospital'
+      hospital: 'Ibn Al-Nafees Hospital',
+      location: 'Isa Town'
     },
     {
       id: '6',
@@ -116,41 +159,116 @@ const FindDoctors: React.FC = () => {
       nextAvailable: 'Wednesday 11:30 AM',
       languages: ['Arabic', 'English'],
       education: 'MD, University of London',
-      hospital: 'American Mission Hospital'
+      hospital: 'American Mission Hospital',
+      location: 'Manama'
+    },
+    {
+      id: '7',
+      name: 'Dr. Hassan Al-Mahmood',
+      specialty: 'Gastroenterology',
+      experience: 16,
+      rating: 4.8,
+      reviewCount: 142,
+      fee: 27, // BHD
+      avatar: '',
+      isOnline: true,
+      nextAvailable: 'Today 3:15 PM',
+      languages: ['Arabic', 'English'],
+      education: 'MD, University of Edinburgh',
+      hospital: 'Gulf Diagnostic Centre',
+      location: 'Adliya'
+    },
+    {
+      id: '8',
+      name: 'Dr. Noor Al-Sabah',
+      specialty: 'Gynecology',
+      experience: 11,
+      rating: 4.9,
+      reviewCount: 198,
+      fee: 22, // BHD
+      avatar: '',
+      isOnline: false,
+      nextAvailable: 'Tomorrow 2:00 PM',
+      languages: ['Arabic', 'English'],
+      education: 'MD, American University of Beirut',
+      hospital: 'Noor Specialist Hospital',
+      location: 'Sitra'
+    },
+    {
+      id: '9',
+      name: 'Dr. Yusuf Al-Ansari',
+      specialty: 'Ophthalmology',
+      experience: 13,
+      rating: 4.7,
+      reviewCount: 167,
+      fee: 24, // BHD
+      avatar: '',
+      isOnline: true,
+      nextAvailable: 'Today 5:30 PM',
+      languages: ['Arabic', 'English'],
+      education: 'MD, Cairo University',
+      hospital: 'Eye Care Centre Bahrain',
+      location: 'Hamad Town'
+    },
+    {
+      id: '10',
+      name: 'Dr. Amina Al-Fadhel',
+      specialty: 'Endocrinology',
+      experience: 9,
+      rating: 4.8,
+      reviewCount: 113,
+      fee: 26, // BHD
+      avatar: '',
+      isOnline: false,
+      nextAvailable: 'Thursday 10:30 AM',
+      languages: ['Arabic', 'English'],
+      education: 'MD, King Saud University',
+      hospital: 'Diabetes & Endocrine Centre',
+      location: 'Budaiya'
     }
   ];
 
-  const filteredDoctors = mockDoctors.filter(doctor => {
+  const filteredDoctors = doctors.filter(doctor => {
     const matchesSearch = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+                         (doctor.specialization && doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                         (doctor.qualifications && doctor.qualifications.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesSpecialty = !selectedSpecialty || selectedSpecialty === 'All Specialties' || 
-                            doctor.specialty === selectedSpecialty;
+                            doctor.specialization === selectedSpecialty;
+    // For now, we'll skip location filtering since we don't have location data for doctors
     return matchesSearch && matchesSpecialty;
   });
 
   const sortedDoctors = [...filteredDoctors].sort((a, b) => {
     switch (sortBy) {
       case 'rating':
-        return b.rating - a.rating;
+        return (b.rating || 0) - (a.rating || 0);
       case 'experience':
-        return b.experience - a.experience;
+        // Extract years from experience string (e.g., "5 years" -> 5)
+        const aExp = parseInt(a.experience?.match(/\d+/)?.[0] || '0');
+        const bExp = parseInt(b.experience?.match(/\d+/)?.[0] || '0');
+        return bExp - aExp;
       case 'fee-low':
-        return a.fee - b.fee;
+        return (a.consultationFee || 0) - (b.consultationFee || 0);
       case 'fee-high':
-        return b.fee - a.fee;
+        return (b.consultationFee || 0) - (a.consultationFee || 0);
       default:
         return 0;
     }
   });
 
   const handleBookAppointment = (doctorId: string) => {
+    if (!userLoggedIn) {
+      showToast('Please sign in to book an appointment', 'info');
+      navigate(routes.login);
+      return;
+    }
     console.log('Booking appointment with doctor:', doctorId);
-    // Implement booking logic
+    showToast('Appointment booking feature coming soon!', 'info');
   };
 
   const handleViewProfile = (doctorId: string) => {
     console.log('Viewing profile for doctor:', doctorId);
-    // Implement profile view logic
+    showToast('Doctor profile feature coming soon!', 'info');
   };
 
   return (
@@ -164,6 +282,30 @@ const FindDoctors: React.FC = () => {
         borderBottom: '1px solid #e5e7eb'
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          {/* Login Status Notice */}
+          {!userLoggedIn && (
+            <div style={{
+              backgroundColor: '#fef3c7',
+              border: '1px solid #f59e0b',
+              borderRadius: '12px',
+              padding: '16px 24px',
+              marginBottom: '32px',
+              textAlign: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
+                <svg width="20" height="20" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span style={{ fontSize: '16px', fontWeight: '600', color: '#92400e' }}>
+                  Browse doctors or sign in for full access
+                </span>
+              </div>
+              <p style={{ fontSize: '14px', color: '#92400e', margin: 0 }}>
+                You can view doctor profiles and locations. Sign in to see availability and book appointments.
+              </p>
+            </div>
+          )}
+
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <span style={{
               display: 'inline-block',
@@ -201,7 +343,10 @@ const FindDoctors: React.FC = () => {
               margin: '0 auto',
               lineHeight: '1.6'
             }}>
-              Connect with NHRA-licensed healthcare professionals across the Kingdom. Book appointments with trusted doctors in your area.
+              {userLoggedIn 
+                ? 'Connect with NHRA-licensed healthcare professionals across the Kingdom. Book appointments with trusted doctors in your area.'
+                : 'Browse NHRA-licensed healthcare professionals across the Kingdom. Sign in to book appointments and access full features.'
+              }
             </p>
           </div>
 
@@ -212,7 +357,7 @@ const FindDoctors: React.FC = () => {
             padding: '32px',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
             display: 'grid',
-            gridTemplateColumns: window.innerWidth >= 768 ? 'repeat(4, 1fr)' : '1fr',
+            gridTemplateColumns: window.innerWidth >= 768 ? 'repeat(5, 1fr)' : '1fr',
             gap: '16px'
           }}>
             <div style={{ gridColumn: window.innerWidth >= 768 ? 'span 2' : 'span 1' }}>
@@ -230,7 +375,7 @@ const FindDoctors: React.FC = () => {
                 </svg>
                 <input
                   type="text"
-                  placeholder="Search doctors, specialties..."
+                  placeholder="Search doctors, specialties, hospitals..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
@@ -263,6 +408,27 @@ const FindDoctors: React.FC = () => {
                 {specialties.map((specialty) => (
                   <option key={specialty} value={specialty}>
                     {specialty}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  backgroundColor: 'white'
+                }}
+              >
+                {locations.map((location) => (
+                  <option key={location} value={location}>
+                    {location}
                   </option>
                 ))}
               </select>
@@ -308,6 +474,9 @@ const FindDoctors: React.FC = () => {
                 {selectedSpecialty && selectedSpecialty !== 'All Specialties' && (
                   <span> in <span style={{ fontWeight: '600', color: '#0d9488' }}>{selectedSpecialty}</span></span>
                 )}
+                {selectedLocation && selectedLocation !== 'All Locations' && (
+                  <span> in <span style={{ fontWeight: '600', color: '#2563eb' }}>{selectedLocation}</span></span>
+                )}
               </p>
             </div>
             
@@ -344,6 +513,7 @@ const FindDoctors: React.FC = () => {
                 doctor={doctor}
                 onBookAppointment={handleBookAppointment}
                 onViewProfile={handleViewProfile}
+                isUserLoggedIn={userLoggedIn}
               />
             ))}
           </div>
@@ -384,6 +554,7 @@ const FindDoctors: React.FC = () => {
                 onClick={() => {
                   setSearchTerm('');
                   setSelectedSpecialty('');
+                  setSelectedLocation('');
                 }}
                 style={{
                   padding: '12px 24px',

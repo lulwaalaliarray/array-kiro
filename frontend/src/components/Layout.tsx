@@ -167,10 +167,10 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle }) => {
                     e.currentTarget.style.color = '#6b7280';
                   }}
                 >
-                  Dashboard
+                  {user && user.userType === 'doctor' ? 'Past Patients' : 'Dashboard'}
                 </Link>
                 <Link
-                  to={routes.doctors}
+                  to={user.userType === 'doctor' ? routes.appointments : routes.doctors}
                   style={{
                     color: '#6b7280',
                     textDecoration: 'none',
@@ -185,12 +185,12 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle }) => {
                     e.currentTarget.style.color = '#6b7280';
                   }}
                 >
-                  Find Doctors
+                  {user.userType === 'doctor' ? 'Upcoming Appointments' : 'Find Doctors'}
                 </Link>
               </>
             )}
             <Link
-              to={routes.about}
+              to={user && user.userType === 'doctor' ? routes.blog : routes.about}
               style={{
                 color: '#6b7280',
                 textDecoration: 'none',
@@ -205,7 +205,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle }) => {
                 e.currentTarget.style.color = '#6b7280';
               }}
             >
-              About
+              {user && user.userType === 'doctor' ? 'Blog' : 'About'}
             </Link>
             <Link
               to={routes.contact}

@@ -13,6 +13,17 @@ interface User {
   status?: string;
   createdAt?: string;
   avatar?: string;
+  specialization?: string;
+  consultationFee?: number;
+  experience?: string;
+  qualifications?: string;
+  availability?: {
+    [key: string]: {
+      available: boolean;
+      startTime: string;
+      endTime: string;
+    };
+  };
 }
 
 const ProfilePage: React.FC = () => {
@@ -37,7 +48,12 @@ const ProfilePage: React.FC = () => {
             ...parsedUser,
             cpr: detailedUser.cpr,
             status: detailedUser.status,
-            createdAt: detailedUser.createdAt
+            createdAt: detailedUser.createdAt,
+            specialization: detailedUser.specialization,
+            consultationFee: detailedUser.consultationFee,
+            experience: detailedUser.experience,
+            qualifications: detailedUser.qualifications,
+            availability: detailedUser.availability
           });
         } else {
           setUser(parsedUser);
@@ -232,29 +248,6 @@ const ProfilePage: React.FC = () => {
             flexWrap: 'wrap'
           }}>
             <Link
-              to={routes.dashboard}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: 'white',
-                color: '#0d9488',
-                border: '2px solid #0d9488',
-                borderRadius: '8px',
-                fontSize: '16px',
-                fontWeight: '600',
-                textDecoration: 'none',
-                transition: 'all 0.2s',
-                display: 'inline-block'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#f0fdfa';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'white';
-              }}
-            >
-              Back to Dashboard
-            </Link>
-            <Link
               to={routes.home}
               style={{
                 padding: '12px 24px',
@@ -428,6 +421,104 @@ const ProfilePage: React.FC = () => {
                   </span>
                 </div>
               </div>
+              
+              {/* Doctor-specific information */}
+              {user.userType === 'doctor' && (
+                <>
+                  {user.specialization && (
+                    <div>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        margin: '0 0 4px 0',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        fontWeight: '500'
+                      }}>
+                        Specialization
+                      </p>
+                      <p style={{
+                        fontSize: '18px',
+                        fontWeight: '600',
+                        color: '#111827',
+                        margin: 0
+                      }}>
+                        {user.specialization}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {user.consultationFee && (
+                    <div>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        margin: '0 0 4px 0',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        fontWeight: '500'
+                      }}>
+                        Consultation Fee
+                      </p>
+                      <p style={{
+                        fontSize: '18px',
+                        fontWeight: '600',
+                        color: '#111827',
+                        margin: 0
+                      }}>
+                        BHD {user.consultationFee}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {user.experience && (
+                    <div>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        margin: '0 0 4px 0',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        fontWeight: '500'
+                      }}>
+                        Experience
+                      </p>
+                      <p style={{
+                        fontSize: '18px',
+                        fontWeight: '600',
+                        color: '#111827',
+                        margin: 0
+                      }}>
+                        {user.experience}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {user.qualifications && (
+                    <div>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        margin: '0 0 4px 0',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        fontWeight: '500'
+                      }}>
+                        Qualifications
+                      </p>
+                      <p style={{
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        color: '#111827',
+                        margin: 0,
+                        lineHeight: '1.5'
+                      }}>
+                        {user.qualifications}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
@@ -544,6 +635,156 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Doctor Availability Section */}
+        {user.userType === 'doctor' && user.availability && (
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            marginBottom: '32px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: '#f0fdfa',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <svg width="24" height="24" fill="#0d9488" viewBox="0 0 24 24">
+                  <path d="M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z"/>
+                </svg>
+              </div>
+              <h3 style={{
+                fontSize: '20px',
+                fontWeight: '700',
+                color: '#111827',
+                margin: 0
+              }}>
+                Weekly Availability
+              </h3>
+            </div>
+            
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '16px'
+            }}>
+              {Object.entries(user.availability).map(([day, schedule]) => (
+                <div key={day} style={{
+                  padding: '16px',
+                  backgroundColor: schedule.available ? '#f0fdfa' : '#f9fafb',
+                  borderRadius: '12px',
+                  border: `1px solid ${schedule.available ? '#0d9488' : '#e5e7eb'}`
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <div style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: schedule.available ? '#0d9488' : '#9ca3af'
+                    }}></div>
+                    <p style={{
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: '#111827',
+                      margin: 0,
+                      textTransform: 'capitalize'
+                    }}>
+                      {day}
+                    </p>
+                  </div>
+                  
+                  {schedule.available ? (
+                    <div>
+                      <p style={{
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        color: '#0d9488',
+                        margin: '0 0 4px 0'
+                      }}>
+                        {(() => {
+                          const formatTime = (time: string) => {
+                            const [hours, minutes] = time.split(':');
+                            const hour = parseInt(hours);
+                            const ampm = hour >= 12 ? 'PM' : 'AM';
+                            const displayHour = hour % 12 || 12;
+                            return `${displayHour}:${minutes} ${ampm}`;
+                          };
+                          return `${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}`;
+                        })()}
+                      </p>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        margin: 0
+                      }}>
+                        Available for appointments
+                      </p>
+                    </div>
+                  ) : (
+                    <p style={{
+                      fontSize: '14px',
+                      color: '#9ca3af',
+                      margin: 0,
+                      fontStyle: 'italic'
+                    }}>
+                      Not available
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <div style={{
+              marginTop: '20px',
+              padding: '16px',
+              backgroundColor: '#f3f4f6',
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                margin: '0 0 8px 0'
+              }}>
+                Want to update your availability?
+              </p>
+              <Link
+                to="/manage-availability"
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#0d9488',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s',
+                  display: 'inline-block'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#0f766e';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#0d9488';
+                }}
+              >
+                Manage Availability
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Danger Zone */}
         <div style={{

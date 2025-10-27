@@ -52,6 +52,8 @@ export const routes = {
   careers: '/careers',
   press: '/press',
   blog: '/blog',
+  blogPost: (id: string) => `/blog/${id}`,
+  createBlog: '/blog/create',
   // Support pages
   help: '/help',
   privacy: '/privacy',

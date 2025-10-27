@@ -170,10 +170,10 @@ const Header: React.FC = () => {
                 onMouseEnter={(e) => e.currentTarget.style.color = '#0d9488'}
                 onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
               >
-                Dashboard
+                {user.userType === 'doctor' ? 'Past Patients' : 'Dashboard'}
               </button>
               <button 
-                onClick={() => handleNavClick(routes.doctors)}
+                onClick={() => handleNavClick(user.userType === 'doctor' ? routes.appointments : routes.doctors)}
                 style={{ 
                   color: '#6b7280', 
                   background: 'none',
@@ -186,12 +186,12 @@ const Header: React.FC = () => {
                 onMouseEnter={(e) => e.currentTarget.style.color = '#0d9488'}
                 onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
               >
-                Find Doctors
+                {user.userType === 'doctor' ? 'Upcoming Appointments' : 'Find Doctors'}
               </button>
             </>
           )}
           <button 
-            onClick={() => handleNavClick(routes.about)}
+            onClick={() => handleNavClick(user && user.userType === 'doctor' ? routes.blog : routes.about)}
             style={{ 
               color: '#6b7280', 
               background: 'none',
@@ -204,7 +204,7 @@ const Header: React.FC = () => {
             onMouseEnter={(e) => e.currentTarget.style.color = '#0d9488'}
             onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
           >
-            About
+            {user && user.userType === 'doctor' ? 'Blog' : 'About'}
           </button>
           <button 
             onClick={() => handleNavClick(routes.contact)}
@@ -515,11 +515,17 @@ const Header: React.FC = () => {
             <button onClick={() => handleNavClick(routes.home)} style={{ color: '#6b7280', background: 'none', border: 'none', textAlign: 'left', fontWeight: '500', cursor: 'pointer' }}>Home</button>
             {user && (
               <>
-                <button onClick={() => handleNavClick(routes.dashboard)} style={{ color: '#6b7280', background: 'none', border: 'none', textAlign: 'left', fontWeight: '500', cursor: 'pointer' }}>Dashboard</button>
-                <button onClick={() => handleNavClick(routes.doctors)} style={{ color: '#6b7280', background: 'none', border: 'none', textAlign: 'left', fontWeight: '500', cursor: 'pointer' }}>Find Doctors</button>
+                <button onClick={() => handleNavClick(routes.dashboard)} style={{ color: '#6b7280', background: 'none', border: 'none', textAlign: 'left', fontWeight: '500', cursor: 'pointer' }}>
+                  {user && user.userType === 'doctor' ? 'Past Patients' : 'Dashboard'}
+                </button>
+                <button onClick={() => handleNavClick(user.userType === 'doctor' ? routes.appointments : routes.doctors)} style={{ color: '#6b7280', background: 'none', border: 'none', textAlign: 'left', fontWeight: '500', cursor: 'pointer' }}>
+                  {user.userType === 'doctor' ? 'Upcoming Appointments' : 'Find Doctors'}
+                </button>
               </>
             )}
-            <button onClick={() => handleNavClick(routes.about)} style={{ color: '#6b7280', background: 'none', border: 'none', textAlign: 'left', fontWeight: '500', cursor: 'pointer' }}>About</button>
+            <button onClick={() => handleNavClick(user && user.userType === 'doctor' ? routes.blog : routes.about)} style={{ color: '#6b7280', background: 'none', border: 'none', textAlign: 'left', fontWeight: '500', cursor: 'pointer' }}>
+              {user && user.userType === 'doctor' ? 'Blog' : 'About'}
+            </button>
             <button onClick={() => handleNavClick(routes.contact)} style={{ color: '#6b7280', background: 'none', border: 'none', textAlign: 'left', fontWeight: '500', cursor: 'pointer' }}>Contact</button>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
               {user ? (

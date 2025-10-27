@@ -10,6 +10,20 @@ export interface User {
   cpr: string;
   status: 'active' | 'pending_verification' | 'verified';
   createdAt: string;
+  // Doctor-specific fields
+  specialization?: string;
+  consultationFee?: number;
+  experience?: string;
+  qualifications?: string;
+  availability?: {
+    [key: string]: {
+      available: boolean;
+      startTime: string;
+      endTime: string;
+    };
+  };
+  rating?: number;
+  reviewCount?: number;
 }
 
 export const userStorage = {

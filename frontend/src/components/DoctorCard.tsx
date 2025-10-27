@@ -14,15 +14,17 @@ interface Doctor {
   languages: string[];
   education: string;
   hospital?: string;
+  location: string;
 }
 
 interface DoctorCardProps {
   doctor: Doctor;
   onBookAppointment: (doctorId: string) => void;
   onViewProfile: (doctorId: string) => void;
+  isUserLoggedIn?: boolean;
 }
 
-const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBookAppointment, onViewProfile }) => {
+const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBookAppointment, onViewProfile, isUserLoggedIn = false }) => {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <svg
@@ -144,6 +146,14 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBookAppointment, onVi
               {doctor.hospital}
             </p>
           )}
+          <p style={{
+            fontSize: '12px',
+            color: '#0d9488',
+            marginTop: '2px',
+            fontWeight: '500'
+          }}>
+            📍 {doctor.location}
+          </p>
         </div>
 
         <div style={{ textAlign: 'right' }}>
@@ -216,25 +226,51 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBookAppointment, onVi
         </div>
       </div>
 
-      {/* Availability */}
-      <div style={{
-        marginBottom: '20px',
-        padding: '12px',
-        backgroundColor: '#f8fafc',
-        borderRadius: '8px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <svg width="16" height="16" fill="none" stroke="#0d9488" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span style={{
-            fontSize: '14px',
-            color: '#374151'
-          }}>
-            {doctor.isOnline ? 'Available now' : `Next available: ${doctor.nextAvailable}`}
-          </span>
+      {/* Availability - Only show for logged in users */}
+      {isUserLoggedIn && (
+        <div style={{
+          marginBottom: '20px',
+          padding: '12px',
+          backgroundColor: '#f8fafc',
+          borderRadius: '8px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="16" height="16" fill="none" stroke="#0d9488" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span style={{
+              fontSize: '14px',
+              color: '#374151'
+            }}>
+              {doctor.isOnline ? 'Available now' : `Next available: ${doctor.nextAvailable}`}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Sign in prompt for non-logged in users */}
+      {!isUserLoggedIn && (
+        <div style={{
+          marginBottom: '20px',
+          padding: '12px',
+          backgroundColor: '#fef3c7',
+          borderRadius: '8px',
+          border: '1px solid #f59e0b'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="16" height="16" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <span style={{
+              fontSize: '14px',
+              color: '#92400e',
+              fontWeight: '500'
+            }}>
+              Sign in to view availability and book appointments
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div style={{ display: 'flex', gap: '12px' }}>
@@ -266,7 +302,9 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBookAppointment, onVi
           style={{
             flex: 1,
             padding: '12px',
-            background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)',
+            background: isUserLoggedIn 
+              ? 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)'
+              : 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)',
             color: 'white',
             border: 'none',
             borderRadius: '8px',
@@ -276,15 +314,22 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBookAppointment, onVi
             transition: 'all 0.2s'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(13, 148, 136, 0.3)';
+            if (isUserLoggedIn) {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(13, 148, 136, 0.3)';
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = 'none';
+            if (isUserLoggedIn) {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }
           }}
         >
-          {doctor.isOnline ? 'Book Now' : 'Schedule'}
+          {isUserLoggedIn 
+            ? (doctor.isOnline ? 'Book Now' : 'Schedule')
+            : 'Sign In to Book'
+          }
         </button>
       </div>
     </div>

@@ -12,16 +12,42 @@ const SignupPage: React.FC = () => {
     confirmPassword: '',
     userType: 'patient',
     cpr: '',
-    certification: null as File | null
+    certification: null as File | null,
+    specialization: '',
+    consultationFee: '',
+    experience: '',
+    qualifications: '',
+    availability: {
+      monday: { available: false, startTime: '09:00', endTime: '17:00' },
+      tuesday: { available: false, startTime: '09:00', endTime: '17:00' },
+      wednesday: { available: false, startTime: '09:00', endTime: '17:00' },
+      thursday: { available: false, startTime: '09:00', endTime: '17:00' },
+      friday: { available: false, startTime: '09:00', endTime: '17:00' },
+      saturday: { available: false, startTime: '09:00', endTime: '17:00' },
+      sunday: { available: false, startTime: '09:00', endTime: '17:00' }
+    }
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
+    });
+  };
+
+  const handleAvailabilityChange = (day: string, field: string, value: string | boolean) => {
+    setFormData({
+      ...formData,
+      availability: {
+        ...formData.availability,
+        [day]: {
+          ...formData.availability[day as keyof typeof formData.availability],
+          [field]: value
+        }
+      }
     });
   };
 
@@ -42,6 +68,21 @@ const SignupPage: React.FC = () => {
       showToast('Please fill in all required fields', 'error');
       setIsLoading(false);
       return;
+    }
+
+    // Doctor-specific validation
+    if (formData.userType === 'doctor') {
+      if (!formData.specialization || !formData.consultationFee || !formData.experience || !formData.qualifications) {
+        showToast('Please fill in all doctor-specific fields', 'error');
+        setIsLoading(false);
+        return;
+      }
+      
+      if (isNaN(Number(formData.consultationFee)) || Number(formData.consultationFee) <= 0) {
+        showToast('Please enter a valid consultation fee', 'error');
+        setIsLoading(false);
+        return;
+      }
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -87,7 +128,16 @@ const SignupPage: React.FC = () => {
         userType: formData.userType as 'patient' | 'doctor',
         cpr: formData.cpr,
         status: formData.userType === 'doctor' ? 'pending_verification' : 'active',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        ...(formData.userType === 'doctor' && {
+          specialization: formData.specialization,
+          consultationFee: Number(formData.consultationFee),
+          experience: formData.experience,
+          qualifications: formData.qualifications,
+          availability: formData.availability,
+          rating: 0,
+          reviewCount: 0
+        })
       };
 
       // Store user credentials
@@ -114,7 +164,20 @@ const SignupPage: React.FC = () => {
         confirmPassword: '',
         userType: 'patient',
         cpr: '',
-        certification: null
+        certification: null,
+        specialization: '',
+        consultationFee: '',
+        experience: '',
+        qualifications: '',
+        availability: {
+          monday: { available: false, startTime: '09:00', endTime: '17:00' },
+          tuesday: { available: false, startTime: '09:00', endTime: '17:00' },
+          wednesday: { available: false, startTime: '09:00', endTime: '17:00' },
+          thursday: { available: false, startTime: '09:00', endTime: '17:00' },
+          friday: { available: false, startTime: '09:00', endTime: '17:00' },
+          saturday: { available: false, startTime: '09:00', endTime: '17:00' },
+          sunday: { available: false, startTime: '09:00', endTime: '17:00' }
+        }
       });
 
       // Redirect to login page after a short delay
@@ -448,6 +511,246 @@ const SignupPage: React.FC = () => {
                   Upload your NHRA medical license or certification. This will be reviewed by our team.
                 </p>
               </div>
+            )}
+
+            {formData.userType === 'doctor' && (
+              <>
+                {/* Specialization */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '6px'
+                  }}>
+                    Specialization <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <select
+                    name="specialization"
+                    value={formData.specialization}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      backgroundColor: 'white',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <option value="">Select your specialization</option>
+                    <option value="General Medicine">General Medicine</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Dermatology">Dermatology</option>
+                    <option value="Endocrinology">Endocrinology</option>
+                    <option value="Gastroenterology">Gastroenterology</option>
+                    <option value="Gynecology">Gynecology</option>
+                    <option value="Neurology">Neurology</option>
+                    <option value="Oncology">Oncology</option>
+                    <option value="Orthopedics">Orthopedics</option>
+                    <option value="Pediatrics">Pediatrics</option>
+                    <option value="Psychiatry">Psychiatry</option>
+                    <option value="Pulmonology">Pulmonology</option>
+                    <option value="Radiology">Radiology</option>
+                    <option value="Urology">Urology</option>
+                    <option value="Emergency Medicine">Emergency Medicine</option>
+                    <option value="Family Medicine">Family Medicine</option>
+                    <option value="Internal Medicine">Internal Medicine</option>
+                    <option value="Ophthalmology">Ophthalmology</option>
+                    <option value="ENT">ENT (Ear, Nose, Throat)</option>
+                    <option value="Anesthesiology">Anesthesiology</option>
+                  </select>
+                </div>
+
+                {/* Consultation Fee */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '6px'
+                  }}>
+                    Consultation Fee (BHD) <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="consultationFee"
+                    value={formData.consultationFee}
+                    onChange={handleChange}
+                    placeholder="e.g., 25"
+                    min="1"
+                    step="0.5"
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      transition: 'border-color 0.2s',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#0d9488'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                </div>
+
+                {/* Experience */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '6px'
+                  }}>
+                    Years of Experience <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="experience"
+                    value={formData.experience}
+                    onChange={handleChange}
+                    placeholder="e.g., 5 years"
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      transition: 'border-color 0.2s',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#0d9488'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                </div>
+
+                {/* Qualifications */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '6px'
+                  }}>
+                    Qualifications <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <textarea
+                    name="qualifications"
+                    value={formData.qualifications}
+                    onChange={handleChange}
+                    placeholder="e.g., MBBS, MD, Board Certified in Cardiology"
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      transition: 'border-color 0.2s',
+                      resize: 'vertical',
+                      fontFamily: 'inherit',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#0d9488'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                </div>
+
+                {/* Availability */}
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '12px'
+                  }}>
+                    Weekly Availability
+                  </label>
+                  <div style={{
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    backgroundColor: '#f9fafb'
+                  }}>
+                    {Object.entries(formData.availability).map(([day, schedule]) => (
+                      <div key={day} style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        marginBottom: '12px',
+                        flexWrap: 'wrap'
+                      }}>
+                        <label style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          minWidth: '100px',
+                          cursor: 'pointer'
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={schedule.available}
+                            onChange={(e) => handleAvailabilityChange(day, 'available', e.target.checked)}
+                            style={{
+                              width: '16px',
+                              height: '16px',
+                              accentColor: '#0d9488'
+                            }}
+                          />
+                          <span style={{
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#374151',
+                            textTransform: 'capitalize'
+                          }}>
+                            {day}
+                          </span>
+                        </label>
+                        {schedule.available && (
+                          <>
+                            <input
+                              type="time"
+                              value={schedule.startTime}
+                              onChange={(e) => handleAvailabilityChange(day, 'startTime', e.target.value)}
+                              style={{
+                                padding: '6px 8px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '14px'
+                              }}
+                            />
+                            <span style={{ color: '#6b7280', fontSize: '14px' }}>to</span>
+                            <input
+                              type="time"
+                              value={schedule.endTime}
+                              onChange={(e) => handleAvailabilityChange(day, 'endTime', e.target.value)}
+                              style={{
+                                padding: '6px 8px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '14px'
+                              }}
+                            />
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginTop: '4px'
+                  }}>
+                    Set your weekly availability. You can modify this later in your profile.
+                  </p>
+                </div>
+              </>
             )}
 
             <button
