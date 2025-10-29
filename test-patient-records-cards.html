@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Patient Records Cards - PatientCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { background: #d1fae5; color: #065f46; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .info { background: #dbeafe; color: #1e40af; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .feature { background: #f0fdfa; color: #0d9488; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        
+        .patient-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 16px 0;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .patient-card:hover {
+            border-color: #0d9488;
+            background: #f0fdfa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(13, 148, 136, 0.1);
+        }
+        
+        .patient-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .patient-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .medical-condition {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 4px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏥 Enhanced Patient Records Cards</h1>
+    
+    <div class="test-section">
+        <h2>✨ New Card-Based Patient Records</h2>
+        <div class="success">
+            ✅ Patient records now display as comprehensive cards with CPR, medical conditions, and enhanced information
+        </div>
+        
+        <h3>Enhanced Features:</h3>
+        <ul>
+            <li><strong>CPR Numbers:</strong> Civil Personal Record identification</li>
+            <li><strong>Medical Problems:</strong> Visual icons and color-coded conditions</li>
+            <li><strong>Comprehensive Info:</strong> Age, gender, blood type, allergies</li>
+            <li><strong>Professional Cards:</strong> Modern card-based layout</li>
+            <li><strong>Visual Indicators:</strong> Icons and severity markers</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🎨 Sample Patient Cards</h2>
+        <p>Examples of the new card-based patient records:</p>
+        
+        <!-- Sample Patient Card 1 -->
+        <div class="patient-card">
+            <div class="patient-header">
+                <div class="patient-avatar" style="background-color: #ec4899;">S</div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: #111827; margin: 0 0 4px 0;">Sarah Al-Khalifa</h3>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #6b7280;">
+                        <span>CPR: 850312-1234</span>
+                        <span>•</span>
+                        <span>39 years</span>
+                        <span>•</span>
+                        <span>♀ female</span>
+                    </div>
+                    <p style="font-size: 13px; color: #6b7280; margin: 4px 0 0 0;">patient@patientcare.bh</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 24px; font-weight: 700; color: #0d9488;">12</div>
+                    <div style="font-size: 12px; color: #6b7280; font-weight: 500;">Total Visits</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: #374151; margin: 0 0 8px 0;">Medical Conditions</h4>
+                <div>
+                    <span class="medical-condition" style="background: #ef444415; border: 1px solid #ef444430; color: #ef4444;">
+                        🫀 Hypertension
+                        <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; margin-left: 4px;"></span>
+                    </span>
+                    <span class="medical-condition" style="background: #eab30815; border: 1px solid #eab30830; color: #eab308;">
+                        🧪 High Cholesterol
+                    </span>
+                    <span class="medical-condition" style="background: #10b98115; border: 1px solid #10b98130; color: #10b981;">
+                        🤧 Allergic Rhinitis
+                    </span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">8</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">Prescriptions</div>
+                </div>
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">A+</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">Blood Type</div>
+                </div>
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">Dec 15</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">Last Visit</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Patient Card 2 -->
+        <div class="patient-card">
+            <div class="patient-header">
+                <div class="patient-avatar" style="background-color: #3b82f6;">A</div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: #111827; margin: 0 0 4px 0;">Ahmed Al-Mahmood</h3>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #6b7280;">
+                        <span>CPR: 920815-5678</span>
+                        <span>•</span>
+                        <span>32 years</span>
+                        <span>•</span>
+                        <span>♂ male</span>
+                    </div>
+                    <p style="font-size: 13px; color: #6b7280; margin: 4px 0 0 0;">ahmed.mahmood@gmail.com</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 24px; font-weight: 700; color: #0d9488;">8</div>
+                    <div style="font-size: 12px; color: #6b7280; font-weight: 500;">Total Visits</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: #374151; margin: 0 0 8px 0;">Medical Conditions</h4>
+                <div>
+                    <span class="medical-condition" style="background: #dc262615; border: 1px solid #dc262630; color: #dc2626;">
+                        🩸 Diabetes Type 2
+                        <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; margin-left: 4px;"></span>
+                    </span>
+                    <span class="medical-condition" style="background: #f9731615; border: 1px solid #f9731630; color: #f97316;">
+                        🦴 Arthritis
+                    </span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">5</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">Prescriptions</div>
+                </div>
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">O+</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">Blood Type</div>
+                </div>
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">Dec 10</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">Last Visit</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Technical Implementation</h2>
+        
+        <h3>New Data Structure:</h3>
+        <div style="background: #f8fafc; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 13px;">
+interface PatientRecord {<br>
+&nbsp;&nbsp;patientId: string;<br>
+&nbsp;&nbsp;patientName: string;<br>
+&nbsp;&nbsp;patientEmail: string;<br>
+&nbsp;&nbsp;<strong>cpr: string; // Civil Personal Record</strong><br>
+&nbsp;&nbsp;<strong>age: number;</strong><br>
+&nbsp;&nbsp;<strong>gender: 'male' | 'female';</strong><br>
+&nbsp;&nbsp;<strong>bloodType: string;</strong><br>
+&nbsp;&nbsp;<strong>allergies: string[];</strong><br>
+&nbsp;&nbsp;<strong>medicalProblems: MedicalProblem[];</strong><br>
+&nbsp;&nbsp;// ... existing fields<br>
+}
+        </div>
+
+        <h3>Medical Problems System:</h3>
+        <div class="feature">
+            <strong>🏷️ Categorized Conditions</strong><br>
+            Chronic, Acute, and Preventive categories with severity levels
+        </div>
+        
+        <div class="feature">
+            <strong>🎨 Visual Icons</strong><br>
+            Emoji icons for each medical condition type (🫀 🩸 🫁 🧠 🦴)
+        </div>
+        
+        <div class="feature">
+            <strong>🚨 Severity Indicators</strong><br>
+            Color-coded conditions with red dots for high-severity issues
+        </div>
+        
+        <div class="feature">
+            <strong>📊 Enhanced Stats</strong><br>
+            Blood type, total visits, prescriptions, and last visit date
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Sample Medical Conditions</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div style="padding: 12px; background: #ef444415; border: 1px solid #ef444430; border-radius: 8px;">
+                <div style="font-size: 16px; margin-bottom: 4px;">🫀 Hypertension</div>
+                <div style="font-size: 12px; color: #ef4444;">High Severity • Chronic</div>
+            </div>
+            <div style="padding: 12px; background: #dc262615; border: 1px solid #dc262630; border-radius: 8px;">
+                <div style="font-size: 16px; margin-bottom: 4px;">🩸 Diabetes Type 2</div>
+                <div style="font-size: 12px; color: #dc2626;">High Severity • Chronic</div>
+            </div>
+            <div style="padding: 12px; background: #f59e0b15; border: 1px solid #f59e0b30; border-radius: 8px;">
+                <div style="font-size: 16px; margin-bottom: 4px;">🫁 Asthma</div>
+                <div style="font-size: 12px; color: #f59e0b;">Medium Severity • Chronic</div>
+            </div>
+            <div style="padding: 12px; background: #8b5cf615; border: 1px solid #8b5cf630; border-radius: 8px;">
+                <div style="font-size: 16px; margin-bottom: 4px;">🧠 Migraine</div>
+                <div style="font-size: 12px; color: #8b5cf6;">Medium Severity • Chronic</div>
+            </div>
+            <div style="padding: 12px; background: #f9731615; border: 1px solid #f9731630; border-radius: 8px;">
+                <div style="font-size: 16px; margin-bottom: 4px;">🦴 Arthritis</div>
+                <div style="font-size: 12px; color: #f97316;">Medium Severity • Chronic</div>
+            </div>
+            <div style="padding: 12px; background: #06b6d415; border: 1px solid #06b6d430; border-radius: 8px;">
+                <div style="font-size: 16px; margin-bottom: 4px;">💭 Anxiety</div>
+                <div style="font-size: 12px; color: #06b6d4;">Medium Severity • Chronic</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 How to Test</h2>
+        <div class="info">
+            <ol>
+                <li>Login as a doctor or admin</li>
+                <li>Navigate to "Patient Records" (via Past Patients or direct link)</li>
+                <li>View the enhanced patient cards with:</li>
+                <ul>
+                    <li>CPR numbers and personal information</li>
+                    <li>Medical conditions with icons and severity indicators</li>
+                    <li>Blood type, age, gender information</li>
+                    <li>Enhanced statistics grid</li>
+                    <li>Professional card hover effects</li>
+                </ul>
+                <li>Click on a patient card to view detailed information</li>
+                <li>Check the detailed patient panel with allergies and condition details</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Benefits</h2>
+        <ul>
+            <li><strong>Professional Appearance:</strong> Modern card-based design</li>
+            <li><strong>Quick Information Access:</strong> Key details visible at a glance</li>
+            <li><strong>Medical Context:</strong> Visual representation of health conditions</li>
+            <li><strong>Better Organization:</strong> Structured patient information</li>
+            <li><strong>Enhanced UX:</strong> Hover effects and visual feedback</li>
+            <li><strong>Comprehensive Data:</strong> All essential patient information in one view</li>
+        </ul>
+    </div>
+
+    <div class="success">
+        <h3>🎉 Status: ENHANCED</h3>
+        <p>Patient records now display as professional cards with comprehensive information including CPR numbers, medical conditions with visual icons, blood types, allergies, and enhanced statistics. The card-based layout provides a modern, intuitive interface for healthcare professionals.</p>
+    </div>
+</body>
+</html>

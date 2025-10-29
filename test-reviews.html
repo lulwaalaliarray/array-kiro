@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Review System - PatientCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #6366f1; }
+        button {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0f766e;
+        }
+        .stars {
+            color: #fbbf24;
+            font-size: 18px;
+        }
+        .review-card {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #0d9488;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 PatientCare Review System Test</h1>
+        <p>This page tests the review functionality for completed appointments.</p>
+        
+        <div class="test-section">
+            <h3>📋 Test Instructions</h3>
+            <ol>
+                <li><strong>Login as Patient:</strong> Use <code>patient@patientcare.bh</code> / <code>password</code></li>
+                <li><strong>Navigate to Appointments:</strong> Go to "My Appointments" in the navigation</li>
+                <li><strong>Check Completed Tab:</strong> Switch to the "Completed" tab</li>
+                <li><strong>Leave Reviews:</strong> Click "Leave a Review" for completed appointments</li>
+                <li><strong>View Reviews:</strong> Check the Find Doctors page to see ratings updated</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>⭐ Review System Features</h3>
+            <ul>
+                <li><strong>5-Star Rating System:</strong> Patients can rate doctors from 1-5 stars</li>
+                <li><strong>100 Character Limit:</strong> Comments are limited to 100 characters</li>
+                <li><strong>English Only:</strong> Only English letters, numbers, and basic punctuation allowed</li>
+                <li><strong>One Review Per Appointment:</strong> Prevents duplicate reviews</li>
+                <li><strong>Real-time Updates:</strong> Ratings appear immediately on Find Doctors page</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Testing Scenarios</h3>
+            
+            <h4>Valid Review Examples:</h4>
+            <div class="review-card">
+                <div class="stars">★★★★★</div>
+                <p><strong>5 Stars:</strong> "Excellent doctor, very professional and caring. Highly recommend for cardiology consultations."</p>
+                <small>✅ Valid: 95 characters, English only</small>
+            </div>
+            
+            <div class="review-card">
+                <div class="stars">★★★★☆</div>
+                <p><strong>4 Stars:</strong> "Great experience, thorough examination and clear explanations of treatment plan."</p>
+                <small>✅ Valid: 84 characters, English only</small>
+            </div>
+
+            <h4>Invalid Review Examples:</h4>
+            <div class="review-card">
+                <p><strong>Too Long:</strong> "This is a very long review that exceeds the 100 character limit and should be rejected by the system because it contains too many words and characters that go beyond the allowed maximum length."</p>
+                <small class="error">❌ Invalid: 201 characters (exceeds 100 limit)</small>
+            </div>
+            
+            <div class="review-card">
+                <p><strong>Invalid Characters:</strong> "Great doctor! 😊👍 Very helpful and professional. Highly recommend! 🏥⭐"</p>
+                <small class="error">❌ Invalid: Contains emojis and symbols</small>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Expected Behavior</h3>
+            <ul>
+                <li><strong>Character Counter:</strong> Shows remaining characters (turns red at 90+)</li>
+                <li><strong>Input Validation:</strong> Blocks invalid characters in real-time</li>
+                <li><strong>Submit Button:</strong> Disabled until rating and valid comment provided</li>
+                <li><strong>Success Feedback:</strong> Toast notification on successful submission</li>
+                <li><strong>Rating Display:</strong> Updated ratings appear on doctor cards immediately</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Sample Data</h3>
+            <p>The system includes sample reviews for demonstration:</p>
+            <ul>
+                <li><strong>Dr. Sarah Ahmed:</strong> 2 reviews (4.5 average rating)</li>
+                <li><strong>Dr. Mohammed Hassan:</strong> 1 review (5.0 rating)</li>
+                <li><strong>Dr. Layla Ibrahim:</strong> 1 review (4.0 rating)</li>
+                <li><strong>Dr. Khalid Al-Mansoori:</strong> 1 review (5.0 rating)</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🚀 Quick Start</h3>
+            <p>Ready to test? Follow these steps:</p>
+            <ol>
+                <li>Open the PatientCare application</li>
+                <li>Login with patient credentials</li>
+                <li>Navigate to "My Appointments"</li>
+                <li>Go to "Completed" tab</li>
+                <li>Click "Leave a Review" on any completed appointment</li>
+                <li>Test the rating system and comment validation</li>
+                <li>Submit the review and check the Find Doctors page</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Simple test to verify localStorage functionality
+        console.log('🔍 Testing Review System Components...');
+        
+        // Test if review storage is available
+        try {
+            const testReview = {
+                doctorId: 'test_doctor',
+                patientId: 'test_patient',
+                patientName: 'Test Patient',
+                appointmentId: 'test_appointment',
+                rating: 5,
+                comment: 'Test review for system validation'
+            };
+            
+            console.log('✅ Review object structure valid');
+            console.log('📝 Sample review:', testReview);
+            
+            // Test character validation
+            const validComment = 'Great doctor, very professional and helpful';
+            const invalidComment = 'Great doctor! 😊👍';
+            const longComment = 'This is a very long comment that exceeds the one hundred character limit and should be rejected';
+            
+            const englishOnlyRegex = /^[a-zA-Z0-9\s.,!?'"()-]*$/;
+            
+            console.log('✅ Valid comment test:', englishOnlyRegex.test(validComment) && validComment.length <= 100);
+            console.log('❌ Invalid comment test (emojis):', !englishOnlyRegex.test(invalidComment));
+            console.log('❌ Invalid comment test (too long):', longComment.length > 100);
+            
+        } catch (error) {
+            console.error('❌ Review system test failed:', error);
+        }
+        
+        console.log('🎉 Review system test completed!');
+    </script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Past Patients Cards - PatientCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { background: #d1fae5; color: #065f46; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .info { background: #dbeafe; color: #1e40af; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .feature { background: #f0fdfa; color: #0d9488; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        
+        .patient-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .patient-card:hover {
+            border-color: #0d9488;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(13, 148, 136, 0.1);
+        }
+        
+        .patient-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .patient-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .medical-condition {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 4px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .info-card {
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid;
+        }
+    </style>
+</head>
+<body>
+    <h1>👥 Enhanced Past Patients Cards</h1>
+    
+    <div class="test-section">
+        <h2>✨ New Card-Based Past Patients View</h2>
+        <div class="success">
+            ✅ Past Patients now display as comprehensive cards with CPR, medical conditions, patient stats, and enhanced appointment details
+        </div>
+        
+        <h3>Key Differences from Patient Records:</h3>
+        <ul>
+            <li><strong>Past Patients:</strong> Doctor's completed appointments with specific visit details</li>
+            <li><strong>Patient Records:</strong> Comprehensive medical history and ongoing care management</li>
+            <li><strong>Focus:</strong> Past Patients focuses on individual appointments and prescriptions</li>
+            <li><strong>Actions:</strong> Write/edit prescriptions for specific visits</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🎨 Sample Past Patient Card</h2>
+        <p>Example of the new card-based past patient display:</p>
+        
+        <div class="patient-card">
+            <div class="patient-header">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div class="patient-avatar" style="background-color: #ec4899;">S</div>
+                    <div>
+                        <h3 style="font-size: 20px; font-weight: 700; color: #111827; margin: 0 0 4px 0;">Sarah Al-Khalifa</h3>
+                        <div style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #6b7280; margin-bottom: 4px;">
+                            <span><strong>CPR:</strong> 850312-1234</span>
+                            <span>•</span>
+                            <span>39 years</span>
+                            <span>•</span>
+                            <span>♀ female</span>
+                            <span>•</span>
+                            <span><strong>Blood:</strong> A+</span>
+                        </div>
+                        <p style="font-size: 14px; color: #6b7280; margin: 0;">patient@patientcare.bh</p>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 24px; font-weight: 700; color: #0d9488; margin-bottom: 4px;">BHD 50</div>
+                    <span style="padding: 6px 12px; background: #dcfce7; color: #166534; border-radius: 12px; font-size: 12px; font-weight: 600;">completed</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: #374151; margin: 0 0 8px 0;">Medical Conditions</h4>
+                <div>
+                    <span class="medical-condition" style="background: #ef444415; border: 1px solid #ef444430; color: #ef4444;">
+                        🫀 Hypertension
+                        <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%;"></span>
+                    </span>
+                    <span class="medical-condition" style="background: #eab30815; border: 1px solid #eab30830; color: #eab308;">
+                        🧪 High Cholesterol
+                    </span>
+                    <span class="medical-condition" style="background: #10b98115; border: 1px solid #10b98130; color: #10b981;">
+                        🤧 Allergic Rhinitis
+                    </span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">Dec 15, 2024</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">Visit Date</div>
+                </div>
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">2:00 PM</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">30 min</div>
+                </div>
+                <div>
+                    <div style="font-size: 16px; font-weight: 600; color: #0d9488;">Consultation</div>
+                    <div style="font-size: 11px; color: #6b7280; font-weight: 500;">Appointment Type</div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card" style="background: #f0f9ff; border-color: #bae6fd;">
+                    <h5 style="font-size: 12px; font-weight: 600; color: #0369a1; margin: 0 0 8px 0;">Patient Stats</h5>
+                    <div style="font-size: 12px; color: #0369a1;">
+                        <div style="margin-bottom: 4px;"><strong>Total Visits:</strong> 12</div>
+                        <div style="margin-bottom: 4px;"><strong>Allergies:</strong> Penicillin, Shellfish</div>
+                        <div><strong>Last Visit:</strong> Dec 15, 2024</div>
+                    </div>
+                </div>
+                
+                <div class="info-card" style="background: #f3f4f6; border-color: #d1d5db;">
+                    <h5 style="font-size: 12px; font-weight: 600; color: #374151; margin: 0 0 8px 0;">Appointment Notes</h5>
+                    <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.4;">
+                        Patient reported improvement in blood pressure readings. Continue current medication regimen.
+                    </p>
+                </div>
+                
+                <div class="info-card" style="background: #f0fdfa; border-color: #a7f3d0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h5 style="font-size: 12px; font-weight: 600; color: #065f46; margin: 0;">Prescription</h5>
+                        <button style="padding: 4px 8px; background: #6b7280; color: white; border: none; border-radius: 6px; font-size: 10px; font-weight: 600;">Edit</button>
+                    </div>
+                    <div>
+                        <p style="font-size: 12px; font-weight: 600; color: #065f46; margin: 0 0 2px 0;">Hypertension Management</p>
+                        <p style="font-size: 11px; color: #6b7280; margin: 0;">2 medications • Active</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Technical Implementation</h2>
+        
+        <h3>Enhanced Data Structure:</h3>
+        <div style="background: #f8fafc; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 13px;">
+interface EnhancedPatient {<br>
+&nbsp;&nbsp;patientId: string;<br>
+&nbsp;&nbsp;patientName: string;<br>
+&nbsp;&nbsp;patientEmail: string;<br>
+&nbsp;&nbsp;<strong>cpr: string; // Civil Personal Record</strong><br>
+&nbsp;&nbsp;<strong>age: number;</strong><br>
+&nbsp;&nbsp;<strong>gender: 'male' | 'female';</strong><br>
+&nbsp;&nbsp;<strong>bloodType: string;</strong><br>
+&nbsp;&nbsp;<strong>allergies: string[];</strong><br>
+&nbsp;&nbsp;<strong>medicalProblems: MedicalProblem[];</strong><br>
+&nbsp;&nbsp;<strong>totalVisits: number;</strong><br>
+&nbsp;&nbsp;<strong>lastVisit: string;</strong><br>
+}
+        </div>
+
+        <h3>Key Features:</h3>
+        <div class="feature">
+            <strong>🏥 Appointment-Focused</strong><br>
+            Each card represents a completed appointment with specific visit details
+        </div>
+        
+        <div class="feature">
+            <strong>👤 Enhanced Patient Info</strong><br>
+            CPR, age, gender, blood type, and medical conditions for each patient
+        </div>
+        
+        <div class="feature">
+            <strong>💊 Prescription Management</strong><br>
+            Write/edit prescriptions directly from appointment cards
+        </div>
+        
+        <div class="feature">
+            <strong>📊 Visit Statistics</strong><br>
+            Patient stats including total visits, allergies, and visit history
+        </div>
+        
+        <div class="feature">
+            <strong>🎨 Professional Design</strong><br>
+            Card-based layout with hover effects and color-coded information
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Comparison: Past Patients vs Patient Records</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="padding: 16px; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px;">
+                <h4 style="color: #92400e; margin: 0 0 8px 0;">👥 Past Patients</h4>
+                <ul style="font-size: 13px; color: #92400e; margin: 0; padding-left: 16px;">
+                    <li>Appointment-specific view</li>
+                    <li>Completed visits only</li>
+                    <li>Prescription management per visit</li>
+                    <li>Visit notes and details</li>
+                    <li>Revenue tracking</li>
+                    <li>Monthly grouping</li>
+                </ul>
+            </div>
+            
+            <div style="padding: 16px; background: #dbeafe; border: 1px solid #93c5fd; border-radius: 8px;">
+                <h4 style="color: #1e40af; margin: 0 0 8px 0;">📋 Patient Records</h4>
+                <ul style="font-size: 13px; color: #1e40af; margin: 0; padding-left: 16px;">
+                    <li>Comprehensive medical history</li>
+                    <li>All appointments (past & future)</li>
+                    <li>Complete prescription history</li>
+                    <li>Medical conditions tracking</li>
+                    <li>Patient demographics</li>
+                    <li>Ongoing care management</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 How to Test</h2>
+        <div class="info">
+            <ol>
+                <li>Login as a doctor</li>
+                <li>Navigate to "Past Patients" from the header menu</li>
+                <li>View the enhanced patient cards with:</li>
+                <ul>
+                    <li>CPR numbers and demographic information</li>
+                    <li>Medical conditions with icons and severity indicators</li>
+                    <li>Appointment details in organized sections</li>
+                    <li>Patient statistics and visit history</li>
+                    <li>Prescription management buttons</li>
+                </ul>
+                <li>Use search and month filters to find specific patients</li>
+                <li>Hover over cards to see interactive effects</li>
+                <li>Click "Write/Edit Prescription" buttons to test functionality</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Benefits</h2>
+        <ul>
+            <li><strong>Better Organization:</strong> Clear separation of appointment-specific data</li>
+            <li><strong>Enhanced Context:</strong> Medical conditions visible for each patient</li>
+            <li><strong>Improved Workflow:</strong> Direct prescription management from cards</li>
+            <li><strong>Professional Appearance:</strong> Modern card-based design</li>
+            <li><strong>Quick Access:</strong> Key patient information at a glance</li>
+            <li><strong>Better UX:</strong> Interactive hover effects and clear visual hierarchy</li>
+        </ul>
+    </div>
+
+    <div class="success">
+        <h3>🎉 Status: ENHANCED</h3>
+        <p>Past Patients now displays as professional appointment cards with comprehensive patient information including CPR numbers, medical conditions with visual icons, patient statistics, and enhanced appointment details. This provides doctors with a clear, organized view of their completed appointments while maintaining focus on visit-specific information and prescription management.</p>
+    </div>
+</body>
+</html>

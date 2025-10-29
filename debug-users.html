@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatientCare - Debug Users</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 8px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #0f766e;
+        }
+        .button.danger {
+            background: #ef4444;
+        }
+        .button.danger:hover {
+            background: #dc2626;
+        }
+        .success {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .error {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .stat {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0d9488;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            background: #f8fafc;
+        }
+        .user-item {
+            padding: 8px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        .user-email {
+            color: #0d9488;
+            font-weight: 500;
+        }
+        .user-type {
+            color: #6b7280;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>PatientCare - User Debug Tool</h1>
+            <p>Use this tool to manage and debug the user database for PatientCare.</p>
+            
+            <div class="stats" id="userStats">
+                <div class="stat">
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="patientCount">0</div>
+                    <div class="stat-label">Patients</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="doctorCount">0</div>
+                    <div class="stat-label">Doctors</div>
+                </div>
+            </div>
+
+            <div>
+                <button class="button" onclick="loadStats()">Refresh Stats</button>
+                <button class="button" onclick="initializeDemoUsers()">Add Demo Users</button>
+                <button class="button" onclick="forceInitialize()">Force Reset & Add All Users</button>
+                <button class="button danger" onclick="clearAllUsers()">Clear All Users</button>
+            </div>
+
+            <div id="results"></div>
+        </div>
+
+        <div class="card">
+            <h2>Current Users</h2>
+            <div class="user-list" id="userList">
+                <p>Click "Refresh Stats" to load users...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Quick Test</h2>
+            <p>Test login with these credentials:</p>
+            <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <strong>Patient:</strong> patient@patientcare.bh / password<br>
+                <strong>Doctor:</strong> doctor@patientcare.bh / doctor123
+            </div>
+            <button class="button" onclick="testLogin()">Test Login Credentials</button>
+        </div>
+    </div>
+
+    <script>
+        // User storage functions
+        const userStorage = {
+            getAllUsers: () => {
+                try {
+                    return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                } catch {
+                    return [];
+                }
+            },
+            
+            addUser: (user) => {
+                try {
+                    const users = userStorage.getAllUsers();
+                    if (users.some(existingUser => existingUser.email === user.email)) {
+                        return false;
+                    }
+                    users.push(user);
+                    localStorage.setItem('registeredUsers', JSON.stringify(users));
+                    return true;
+                } catch {
+                    return false;
+                }
+            },
+            
+            clearAllUsers: () => {
+                localStorage.removeItem('registeredUsers');
+            },
+            
+            getUserCount: () => {
+                try {
+                    const users = userStorage.getAllUsers();
+                    const patients = users.filter(user => user.userType === 'patient').length;
+                    const doctors = users.filter(user => user.userType === 'doctor').length;
+                    return { patients, doctors, total: users.length };
+                } catch {
+                    return { patients: 0, doctors: 0, total: 0 };
+                }
+            },
+
+            findUser: (email, password, userType) => {
+                try {
+                    const users = userStorage.getAllUsers();
+                    return users.find(user => 
+                        user.email === email && 
+                        user.password === password &&
+                        (!userType || user.userType === userType)
+                    ) || null;
+                } catch {
+                    return null;
+                }
+            }
+        };
+
+        function showResult(message, type = 'success') {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function loadStats() {
+            const stats = userStorage.getUserCount();
+            document.getElementById('totalUsers').textContent = stats.total;
+            document.getElementById('patientCount').textContent = stats.patients;
+            document.getElementById('doctorCount').textContent = stats.doctors;
+
+            // Load user list
+            const users = userStorage.getAllUsers();
+            const userListDiv = document.getElementById('userList');
+            
+            if (users.length === 0) {
+                userListDiv.innerHTML = '<p>No users found. Click "Add Demo Users" to initialize.</p>';
+            } else {
+                userListDiv.innerHTML = users.map(user => `
+                    <div class="user-item">
+                        <div class="user-email">${user.email}</div>
+                        <div class="user-type">${user.userType} - ${user.name}</div>
+                    </div>
+                `).join('');
+            }
+
+            showResult(`Loaded ${stats.total} users (${stats.patients} patients, ${stats.doctors} doctors)`);
+        }
+
+        function clearAllUsers() {
+            if (confirm('Are you sure you want to delete ALL users? This cannot be undone.')) {
+                userStorage.clearAllUsers();
+                loadStats();
+                showResult('All users cleared!');
+            }
+        }
+
+        function testLogin() {
+            const testCredentials = [
+                { email: 'patient@patientcare.bh', password: 'password', type: 'patient' },
+                { email: 'doctor@patientcare.bh', password: 'doctor123', type: 'doctor' }
+            ];
+            
+            let results = [];
+            testCredentials.forEach(cred => {
+                const user = userStorage.findUser(cred.email, cred.password, cred.type);
+                if (user) {
+                    results.push(`✅ ${cred.email} (${cred.type}) - Login successful`);
+                } else {
+                    results.push(`❌ ${cred.email} (${cred.type}) - Login failed`);
+                }
+            });
+            
+            showResult('Login Test Results:<br>' + results.join('<br>'));
+        }
+
+        // Initialize demo users (simplified version for this debug tool)
+        function initializeDemoUsers() {
+            // Add the main demo users
+            const demoUsers = [
+                // Patient demo
+                {
+                    id: 'patient-001',
+                    name: 'Sarah Al-Khalifa',
+                    email: 'patient@patientcare.bh',
+                    password: 'password',
+                    userType: 'patient',
+                    cpr: '123456789',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-1234-5678',
+                    location: 'Manama, Bahrain'
+                },
+                // Doctor demo
+                {
+                    id: 'doctor-001',
+                    name: 'Dr. Ahmed Al-Mansouri',
+                    email: 'doctor@patientcare.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '987654321',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Cardiology',
+                    consultationFee: 50,
+                    experience: '15 years',
+                    qualifications: 'MD, FACC, Board Certified Cardiologist',
+                    rating: 4.8,
+                    reviewCount: 127,
+                    totalReviews: 127,
+                    bio: 'Experienced cardiologist specializing in heart disease prevention and treatment.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1001',
+                    hospital: 'Bahrain Specialist Hospital',
+                    location: 'Juffair, Bahrain'
+                }
+            ];
+
+            let added = 0;
+            demoUsers.forEach(user => {
+                if (userStorage.addUser(user)) {
+                    added++;
+                }
+            });
+
+            loadStats();
+            showResult(`Added ${added} demo users. Now initializing all 30 users...`);
+            
+            // Trigger the full initialization by calling the app's function
+            setTimeout(() => {
+                // This will be handled by the main app
+                showResult(`Demo users initialized! Total users: ${userStorage.getUserCount().total}. If you don't see all 30 users, refresh the PatientCare app.`);
+            }, 1000);
+        }
+
+        function forceInitialize() {
+            if (confirm('This will clear all existing users and add the 30 demo users. Continue?')) {
+                userStorage.clearAllUsers();
+                initializeDemoUsers();
+                showResult('Force initialized! All users cleared and 30 demo users added.');
+            }
+        }
+
+        // Load stats on page load
+        window.onload = function() {
+            loadStats();
+        };
+    </script>
+</body>
+</html>

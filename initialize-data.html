@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initialize PatientCare Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .danger {
+            background-color: #dc3545;
+        }
+
+        .danger:hover {
+            background-color: #c82333;
+        }
+
+        .data-summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .data-item {
+            margin: 5px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 PatientCare Data Initializer</h1>
+            <p>Initialize your healthcare booking platform with demo data</p>
+        </div>
+
+        <div id="status"></div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="initializeAllData()">Initialize All Demo Data</button>
+            <button onclick="clearAllData()" class="danger">Clear All Data</button>
+            <button onclick="checkCurrentData()">Check Current Data</button>
+        </div>
+
+        <div id="dataSummary" class="data-summary" style="display: none;">
+            <h3>Current Data Summary:</h3>
+            <div id="dataItems"></div>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function initializeAllData() {
+            showStatus('Initializing demo data...', 'info');
+
+            try {
+                // Initialize Users (30 users: 15 patients + 15 doctors)
+                initializeUsers();
+
+                // Initialize Appointments
+                initializeAppointments();
+
+                // Initialize Blog Posts
+                initializeBlogs();
+
+                // Initialize Reviews
+                initializeReviews();
+
+                // Initialize Prescriptions
+                initializePrescriptions();
+
+                // Initialize Doctor Availability
+                initializeAvailability();
+
+                // Set current user data
+                setCurrentUserData();
+
+                // Set auth token
+                localStorage.setItem('authToken', 'mock-jwt-token');
+
+                // Update doctor ratings based on actual reviews
+                updateDoctorRatings();
+
+                showStatus('✅ All demo data initialized successfully! You can now use your PatientCare application with full functionality.', 'success');
+
+                // Auto-check data after initialization
+                setTimeout(checkCurrentData, 1000);
+
+            } catch (error) {
+                showStatus(`❌ Error initializing data: ${error.message}`, 'warning');
+            }
+        }
+
+        function initializeUsers() {
+            const demoUsers = [
+                // 15 Patient Users
+                {
+                    id: 'patient-001',
+                    name: 'Sarah Al-Khalifa',
+                    email: 'patient@patientcare.bh',
+                    password: 'password',
+                    userType: 'patient',
+                    cpr: '123456789',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-1234-5678',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'patient-002',
+                    name: 'Ahmed Al-Mahmood',
+                    email: 'ahmed.mahmood@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '234567890',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-2345-6789',
+                    location: 'Riffa, Bahrain'
+                },
+                {
+                    id: 'patient-003',
+                    name: 'Fatema Al-Zahra',
+                    email: 'fatema.zahra@outlook.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '345678901',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-3456-7890',
+                    location: 'Muharraq, Bahrain'
+                },
+                {
+                    id: 'patient-004',
+                    name: 'Mohammed Al-Rashid',
+                    email: 'mohammed.rashid@yahoo.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '456789012',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-4567-8901',
+                    location: 'Hamad Town, Bahrain'
+                },
+                {
+                    id: 'patient-005',
+                    name: 'Maryam Al-Sabah',
+                    email: 'maryam.sabah@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '567890123',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-5678-9012',
+                    location: 'Isa Town, Bahrain'
+                },
+                {
+                    id: 'patient-006',
+                    name: 'Ali Al-Thani',
+                    email: 'ali.thani@hotmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '678901234',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-6789-0123',
+                    location: 'Sitra, Bahrain'
+                },
+                {
+                    id: 'patient-007',
+                    name: 'Noora Al-Khalil',
+                    email: 'noora.khalil@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '789012345',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-7890-1234',
+                    location: 'Budaiya, Bahrain'
+                },
+                {
+                    id: 'patient-008',
+                    name: 'Hassan Al-Fadhel',
+                    email: 'hassan.fadhel@outlook.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '890123456',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-8901-2345',
+                    location: 'Jidhafs, Bahrain'
+                },
+                {
+                    id: 'patient-009',
+                    name: 'Zahra Al-Mutawa',
+                    email: 'zahra.mutawa@yahoo.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '901234567',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-9012-3456',
+                    location: 'Tubli, Bahrain'
+                },
+                {
+                    id: 'patient-010',
+                    name: 'Omar Al-Dosari',
+                    email: 'omar.dosari@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '012345678',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-0123-4567',
+                    location: 'Seef, Bahrain'
+                },
+                {
+                    id: 'patient-011',
+                    name: 'Aisha Al-Mannai',
+                    email: 'aisha.mannai@hotmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '123450987',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-1234-0987',
+                    location: 'Adliya, Bahrain'
+                },
+                {
+                    id: 'patient-012',
+                    name: 'Khalid Al-Ansari',
+                    email: 'khalid.ansari@outlook.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '234509876',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-2345-0987',
+                    location: 'Zinj, Bahrain'
+                },
+                {
+                    id: 'patient-013',
+                    name: 'Latifa Al-Zayani',
+                    email: 'latifa.zayani@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '345098765',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-3450-9876',
+                    location: 'Sanabis, Bahrain'
+                },
+                {
+                    id: 'patient-014',
+                    name: 'Yusuf Al-Hawaj',
+                    email: 'yusuf.hawaj@yahoo.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '450987654',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-4509-8765',
+                    location: 'Gudaibiya, Bahrain'
+                },
+                {
+                    id: 'patient-015',
+                    name: 'Huda Al-Baharna',
+                    email: 'huda.baharna@hotmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '509876543',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-5098-7654',
+                    location: 'Juffair, Bahrain'
+                },
+
+                // 15 Doctor Users
+                {
+                    id: 'doctor-001',
+                    name: 'Dr. Ahmed Al-Mansouri',
+                    email: 'doctor@patientcare.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '987654321',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Cardiology',
+                    specializations: ['Cardiology', 'Internal Medicine'],
+                    consultationFee: 50,
+                    experience: '15 years',
+                    qualifications: 'MD, FACC, Board Certified Cardiologist',
+                    rating: 4.8,
+                    reviewCount: 0, // Will be calculated from actual reviews
+                    totalReviews: 0,
+                    bio: 'Experienced cardiologist specializing in heart disease prevention and treatment.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1001',
+                    hospital: 'Bahrain Specialist Hospital',
+                    location: 'Juffair, Bahrain',
+                    clinicAddress: 'Building 2345, Road 2830, Juffair 428'
+                },
+                {
+                    id: 'doctor-002',
+                    name: 'Dr. Fatima Al-Zahra',
+                    email: 'fatima.zahra@bmc.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '876543210',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Pediatrics',
+                    specializations: ['Pediatrics', 'Child Development'],
+                    consultationFee: 40,
+                    experience: '12 years',
+                    qualifications: 'MD, FAAP, Pediatric Specialist',
+                    rating: 4.9,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Dedicated pediatrician with expertise in child healthcare and development.',
+                    languages: ['Arabic', 'English', 'French'],
+                    phone: '+973-1700-1002',
+                    hospital: 'Bahrain Medical Center',
+                    location: 'Manama, Bahrain',
+                    clinicAddress: 'Building 1234, Road 1234, Manama 317'
+                },
+                {
+                    id: 'doctor-003',
+                    name: 'Dr. Mohammed Al-Khalifa',
+                    email: 'mohammed.khalifa@kims.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '765432109',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Orthopedics',
+                    specializations: ['Orthopedics', 'Sports Medicine'],
+                    consultationFee: 60,
+                    experience: '18 years',
+                    qualifications: 'MD, MS Orthopedics, Fellowship in Sports Medicine',
+                    rating: 4.7,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Orthopedic surgeon specializing in joint replacement and sports injuries.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1003',
+                    hospital: 'King Hamad University Hospital',
+                    location: 'Busaiteen, Bahrain',
+                    clinicAddress: 'Building 2435, Road 2835, Busaiteen 235'
+                },
+                {
+                    id: 'doctor-004',
+                    name: 'Dr. Aisha Al-Mannai',
+                    email: 'aisha.mannai@awali.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '654321098',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Dermatology',
+                    specializations: ['Dermatology', 'Cosmetic Dermatology'],
+                    consultationFee: 45,
+                    experience: '10 years',
+                    qualifications: 'MD, Dermatology Specialist, Aesthetic Medicine Certificate',
+                    rating: 4.6,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Dermatologist specializing in skin conditions and aesthetic treatments.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1004',
+                    hospital: 'Awali Hospital',
+                    location: 'Awali, Bahrain',
+                    clinicAddress: 'Building 567, Road 567, Awali 230'
+                },
+                {
+                    id: 'doctor-005',
+                    name: 'Dr. Hassan Al-Fadhel',
+                    email: 'hassan.fadhel@smcbh.com',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '543210987',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Neurology',
+                    specializations: ['Neurology', 'Epilepsy'],
+                    consultationFee: 70,
+                    experience: '20 years',
+                    qualifications: 'MD, DM Neurology, Fellowship in Epilepsy',
+                    rating: 4.9,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Neurologist with expertise in treating neurological disorders and epilepsy.',
+                    languages: ['Arabic', 'English', 'German'],
+                    phone: '+973-1700-1005',
+                    hospital: 'Salmaniya Medical Complex',
+                    location: 'Manama, Bahrain',
+                    clinicAddress: 'Building 890, Road 890, Manama 315'
+                },
+                {
+                    id: 'doctor-006',
+                    name: 'Dr. Noora Al-Khalil',
+                    email: 'noora.khalil@ibnalnafees.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '432109876',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Gynecology',
+                    specializations: ['Gynecology', 'Obstetrics'],
+                    consultationFee: 55,
+                    experience: '14 years',
+                    qualifications: 'MD, MS Gynecology, FRCOG',
+                    rating: 4.8,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Gynecologist and obstetrician providing comprehensive women\'s healthcare.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1006',
+                    hospital: 'Ibn Al-Nafees Hospital',
+                    location: 'Manama, Bahrain',
+                    clinicAddress: 'Building 1122, Road 1122, Manama 319'
+                },
+                {
+                    id: 'doctor-007',
+                    name: 'Dr. Ali Al-Thani',
+                    email: 'ali.thani@royalbh.com',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '321098765',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Psychiatry',
+                    specializations: ['Psychiatry', 'Psychology'],
+                    consultationFee: 65,
+                    experience: '16 years',
+                    qualifications: 'MD, DPM, Fellowship in Child Psychiatry',
+                    rating: 4.7,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Psychiatrist specializing in mental health and behavioral disorders.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1007',
+                    hospital: 'Royal Bahrain Hospital',
+                    location: 'Riffa, Bahrain',
+                    clinicAddress: 'Building 3344, Road 3344, Riffa 901'
+                },
+                {
+                    id: 'doctor-008',
+                    name: 'Dr. Zahra Al-Mutawa',
+                    email: 'zahra.mutawa@americanmission.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '210987654',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Ophthalmology',
+                    specializations: ['Ophthalmology', 'Retinal Surgery'],
+                    consultationFee: 75,
+                    experience: '22 years',
+                    qualifications: 'MD, MS Ophthalmology, Fellowship in Vitreoretinal Surgery',
+                    rating: 4.9,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Ophthalmologist specializing in retinal diseases and eye surgery.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1008',
+                    hospital: 'American Mission Hospital',
+                    location: 'Manama, Bahrain',
+                    clinicAddress: 'Building 5566, Road 5566, Manama 321'
+                },
+                {
+                    id: 'doctor-009',
+                    name: 'Dr. Omar Al-Dosari',
+                    email: 'omar.dosari@noor.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '109876543',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Urology',
+                    specializations: ['Urology', 'Kidney Stones'],
+                    consultationFee: 60,
+                    experience: '13 years',
+                    qualifications: 'MD, MS Urology, Fellowship in Endourology',
+                    rating: 4.6,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Urologist specializing in kidney stones and minimally invasive procedures.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1009',
+                    hospital: 'Noor Specialist Hospital',
+                    location: 'Manama, Bahrain',
+                    clinicAddress: 'Building 7788, Road 7788, Manama 323'
+                },
+                {
+                    id: 'doctor-010',
+                    name: 'Dr. Khalid Al-Ansari',
+                    email: 'khalid.ansari@gulf.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '098765432',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'ENT',
+                    specializations: ['ENT', 'Head and Neck Surgery'],
+                    consultationFee: 50,
+                    experience: '11 years',
+                    qualifications: 'MD, MS ENT, Fellowship in Head and Neck Surgery',
+                    rating: 4.5,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'ENT specialist focusing on ear, nose, throat, and head & neck conditions.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1010',
+                    hospital: 'Gulf Dental & Medical Center',
+                    location: 'Manama, Bahrain',
+                    clinicAddress: 'Building 9900, Road 9900, Manama 325'
+                },
+                {
+                    id: 'doctor-011',
+                    name: 'Dr. Latifa Al-Zayani',
+                    email: 'latifa.zayani@joslin.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '987654320',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Endocrinology',
+                    specializations: ['Endocrinology', 'Diabetes'],
+                    consultationFee: 65,
+                    experience: '17 years',
+                    qualifications: 'MD, DM Endocrinology, Diabetes Specialist',
+                    rating: 4.8,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Endocrinologist specializing in diabetes management and hormonal disorders.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1011',
+                    hospital: 'Joslin Diabetes Center',
+                    location: 'Manama, Bahrain',
+                    clinicAddress: 'Building 1010, Road 1010, Manama 327'
+                },
+                {
+                    id: 'doctor-012',
+                    name: 'Dr. Yusuf Al-Hawaj',
+                    email: 'yusuf.hawaj@alkindy.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '876543209',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Gastroenterology',
+                    specializations: ['Gastroenterology', 'Hepatology'],
+                    consultationFee: 70,
+                    experience: '19 years',
+                    qualifications: 'MD, DM Gastroenterology, Fellowship in Hepatology',
+                    rating: 4.7,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Gastroenterologist specializing in digestive system and liver diseases.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1012',
+                    hospital: 'Al-Kindy Medical Center',
+                    location: 'Riffa, Bahrain',
+                    clinicAddress: 'Building 1212, Road 1212, Riffa 903'
+                },
+                {
+                    id: 'doctor-013',
+                    name: 'Dr. Huda Al-Baharna',
+                    email: 'huda.baharna@alahli.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '765432108',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Rheumatology',
+                    specializations: ['Rheumatology', 'Arthritis'],
+                    consultationFee: 55,
+                    experience: '14 years',
+                    qualifications: 'MD, DM Rheumatology, Arthritis Specialist',
+                    rating: 4.6,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Rheumatologist specializing in arthritis and autoimmune diseases.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1013',
+                    hospital: 'Al-Ahli Hospital',
+                    location: 'Manama, Bahrain',
+                    clinicAddress: 'Building 1414, Road 1414, Manama 329'
+                },
+                {
+                    id: 'doctor-014',
+                    name: 'Dr. Abdulla Al-Mahmeed',
+                    email: 'abdulla.mahmeed@alfarabi.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '654321087',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Pulmonology',
+                    specializations: ['Pulmonology', 'Respiratory Medicine'],
+                    consultationFee: 60,
+                    experience: '16 years',
+                    qualifications: 'MD, DM Pulmonology, Sleep Medicine Certificate',
+                    rating: 4.8,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Pulmonologist specializing in respiratory diseases and sleep disorders.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1014',
+                    hospital: 'Al-Farabi Medical Center',
+                    location: 'Sitra, Bahrain',
+                    clinicAddress: 'Building 1616, Road 1616, Sitra 240'
+                },
+                {
+                    id: 'doctor-015',
+                    name: 'Dr. Mariam Al-Qassemi',
+                    email: 'mariam.qassemi@almoayyed.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '543210986',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Oncology',
+                    specializations: ['Oncology', 'Hematology'],
+                    consultationFee: 80,
+                    experience: '21 years',
+                    qualifications: 'MD, DM Oncology, Fellowship in Hematology',
+                    rating: 4.9,
+                    reviewCount: 0,
+                    totalReviews: 0,
+                    bio: 'Oncologist specializing in cancer treatment and blood disorders.',
+                    languages: ['Arabic', 'English', 'French'],
+                    phone: '+973-1700-1015',
+                    hospital: 'Al-Moayyed Medical Center',
+                    location: 'Seef, Bahrain',
+                    clinicAddress: 'Building 1818, Road 1818, Seef 436'
+                }
+            ];
+
+            localStorage.setItem('registeredUsers', JSON.stringify(demoUsers));
+        }
+
+        function initializeAppointments() {
+            const appointments = [
+                // Completed appointments (for reviews)
+                {
+                    id: 'apt-001',
+                    patientId: 'patient-001',
+                    patientName: 'Sarah Al-Khalifa',
+                    patientEmail: 'patient@patientcare.bh',
+                    doctorId: 'doctor-001',
+                    doctorName: 'Dr. Ahmed Al-Mansouri',
+                    date: new Date(Date.now() - 604800000).toISOString().split('T')[0], // 1 week ago
+                    time: '09:00',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'completed',
+                    notes: 'Cardiology consultation - chest pain evaluation',
+                    fee: 50,
+                    createdAt: new Date(Date.now() - 691200000).toISOString(),
+                    updatedAt: new Date(Date.now() - 604800000).toISOString()
+                },
+                {
+                    id: 'apt-002',
+                    patientId: 'patient-002',
+                    patientName: 'Ahmed Al-Mahmood',
+                    patientEmail: 'ahmed.mahmood@gmail.com',
+                    doctorId: 'doctor-002',
+                    doctorName: 'Dr. Fatima Al-Zahra',
+                    date: new Date(Date.now() - 432000000).toISOString().split('T')[0], // 5 days ago
+                    time: '14:00',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'completed',
+                    notes: 'Pediatric consultation for child health check-up',
+                    fee: 40,
+                    createdAt: new Date(Date.now() - 518400000).toISOString(),
+                    updatedAt: new Date(Date.now() - 432000000).toISOString()
+                },
+                {
+                    id: 'apt-003',
+                    patientId: 'patient-003',
+                    patientName: 'Fatema Al-Zahra',
+                    patientEmail: 'fatema.zahra@outlook.com',
+                    doctorId: 'doctor-003',
+                    doctorName: 'Dr. Mohammed Al-Khalifa',
+                    date: new Date(Date.now() - 1209600000).toISOString().split('T')[0], // 2 weeks ago
+                    time: '11:00',
+                    duration: 45,
+                    type: 'consultation',
+                    status: 'completed',
+                    notes: 'Orthopedic consultation for knee pain',
+                    fee: 60,
+                    createdAt: new Date(Date.now() - 1296000000).toISOString(),
+                    updatedAt: new Date(Date.now() - 1209600000).toISOString()
+                },
+                {
+                    id: 'apt-004',
+                    patientId: 'patient-004',
+                    patientName: 'Mohammed Al-Rashid',
+                    patientEmail: 'mohammed.rashid@yahoo.com',
+                    doctorId: 'doctor-004',
+                    doctorName: 'Dr. Aisha Al-Mannai',
+                    date: new Date(Date.now() - 259200000).toISOString().split('T')[0], // 3 days ago
+                    time: '15:30',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'completed',
+                    notes: 'Dermatology consultation for skin condition',
+                    fee: 45,
+                    createdAt: new Date(Date.now() - 345600000).toISOString(),
+                    updatedAt: new Date(Date.now() - 259200000).toISOString()
+                },
+                {
+                    id: 'apt-005',
+                    patientId: 'patient-005',
+                    patientName: 'Maryam Al-Sabah',
+                    patientEmail: 'maryam.sabah@gmail.com',
+                    doctorId: 'doctor-005',
+                    doctorName: 'Dr. Hassan Al-Fadhel',
+                    date: new Date(Date.now() - 864000000).toISOString().split('T')[0], // 10 days ago
+                    time: '10:30',
+                    duration: 45,
+                    type: 'consultation',
+                    status: 'completed',
+                    notes: 'Neurology consultation for headaches',
+                    fee: 70,
+                    createdAt: new Date(Date.now() - 950400000).toISOString(),
+                    updatedAt: new Date(Date.now() - 864000000).toISOString()
+                },
+                {
+                    id: 'apt-006',
+                    patientId: 'patient-006',
+                    patientName: 'Ali Al-Thani',
+                    patientEmail: 'ali.thani@hotmail.com',
+                    doctorId: 'doctor-001',
+                    doctorName: 'Dr. Ahmed Al-Mansouri',
+                    date: new Date(Date.now() - 172800000).toISOString().split('T')[0], // 2 days ago
+                    time: '16:00',
+                    duration: 30,
+                    type: 'follow-up',
+                    status: 'completed',
+                    notes: 'Follow-up for heart condition monitoring',
+                    fee: 50,
+                    createdAt: new Date(Date.now() - 259200000).toISOString(),
+                    updatedAt: new Date(Date.now() - 172800000).toISOString()
+                },
+                {
+                    id: 'apt-007',
+                    patientId: 'patient-007',
+                    patientName: 'Noora Al-Khalil',
+                    patientEmail: 'noora.khalil@gmail.com',
+                    doctorId: 'doctor-002',
+                    doctorName: 'Dr. Fatima Al-Zahra',
+                    date: new Date(Date.now() - 86400000).toISOString().split('T')[0], // Yesterday
+                    time: '09:30',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'completed',
+                    notes: 'Pediatric consultation for vaccination',
+                    fee: 40,
+                    createdAt: new Date(Date.now() - 172800000).toISOString(),
+                    updatedAt: new Date(Date.now() - 86400000).toISOString()
+                },
+
+                // Upcoming appointments
+                {
+                    id: 'apt-upcoming-001',
+                    patientId: 'patient-008',
+                    patientName: 'Hassan Al-Fadhel',
+                    patientEmail: 'hassan.fadhel@outlook.com',
+                    doctorId: 'doctor-001',
+                    doctorName: 'Dr. Ahmed Al-Mansouri',
+                    date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
+                    time: '10:00',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'confirmed',
+                    notes: 'New patient consultation',
+                    fee: 50,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    id: 'apt-upcoming-002',
+                    patientId: 'patient-009',
+                    patientName: 'Zahra Al-Mutawa',
+                    patientEmail: 'zahra.mutawa@yahoo.com',
+                    doctorId: 'doctor-003',
+                    doctorName: 'Dr. Mohammed Al-Khalifa',
+                    date: new Date(Date.now() + 172800000).toISOString().split('T')[0], // Day after tomorrow
+                    time: '14:30',
+                    duration: 45,
+                    type: 'check-up',
+                    status: 'confirmed',
+                    notes: 'Orthopedic follow-up appointment',
+                    fee: 60,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    id: 'apt-pending-001',
+                    patientId: 'patient-010',
+                    patientName: 'Omar Al-Dosari',
+                    patientEmail: 'omar.dosari@gmail.com',
+                    doctorId: 'doctor-004',
+                    doctorName: 'Dr. Aisha Al-Mannai',
+                    date: new Date(Date.now() + 259200000).toISOString().split('T')[0], // 3 days from now
+                    time: '11:15',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'pending',
+                    notes: 'Dermatology consultation request',
+                    fee: 45,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+            ];
+
+            localStorage.setItem('patientcare_appointments', JSON.stringify(appointments));
+        }
+
+        function initializeBlogs() {
+            const blogs = [
+                {
+                    id: '1',
+                    title: '5 Tips for Managing Your Health in Bahrain\'s Climate',
+                    excerpt: 'Learn how to stay healthy during Bahrain\'s hot summers and maintain your wellness year-round.',
+                    content: 'Living in Bahrain\'s unique climate presents both opportunities and challenges for maintaining optimal health...',
+                    author: 'Dr. Fatima Al-Khalifa',
+                    authorId: 'doctor_1',
+                    date: '2024-03-10',
+                    category: 'Health Tips',
+                    readTime: '5 min read',
+                    tags: ['health', 'climate', 'bahrain', 'wellness', 'hydration'],
+                    published: true
+                }
+            ];
+
+            localStorage.setItem('patientcare_blogs', JSON.stringify(blogs));
+        }
+
+        function initializeReviews() {
+            const reviews = [
+                // Reviews from real patients who had completed appointments
+                {
+                    id: 'review_001',
+                    doctorId: 'doctor-001',
+                    patientId: 'patient-001',
+                    patientName: 'Sarah Al-Khalifa',
+                    appointmentId: 'apt-001',
+                    rating: 5,
+                    comment: 'Excellent cardiologist! Very thorough examination and clear explanations.',
+                    createdAt: new Date(Date.now() - 518400000).toISOString() // 6 days ago
+                },
+                {
+                    id: 'review_002',
+                    doctorId: 'doctor-002',
+                    patientId: 'patient-002',
+                    patientName: 'Ahmed Al-Mahmood',
+                    appointmentId: 'apt-002',
+                    rating: 5,
+                    comment: 'Amazing pediatrician! My child felt comfortable and the care was exceptional.',
+                    createdAt: new Date(Date.now() - 345600000).toISOString() // 4 days ago
+                },
+                {
+                    id: 'review_003',
+                    doctorId: 'doctor-003',
+                    patientId: 'patient-003',
+                    patientName: 'Fatema Al-Zahra',
+                    appointmentId: 'apt-003',
+                    rating: 4,
+                    comment: 'Professional orthopedic doctor. Good treatment plan for my knee problem.',
+                    createdAt: new Date(Date.now() - 1123200000).toISOString() // 13 days ago
+                },
+                {
+                    id: 'review_004',
+                    doctorId: 'doctor-004',
+                    patientId: 'patient-004',
+                    patientName: 'Mohammed Al-Rashid',
+                    appointmentId: 'apt-004',
+                    rating: 5,
+                    comment: 'Great dermatologist with modern equipment. Skin condition improved quickly.',
+                    createdAt: new Date(Date.now() - 172800000).toISOString() // 2 days ago
+                },
+                {
+                    id: 'review_005',
+                    doctorId: 'doctor-005',
+                    patientId: 'patient-005',
+                    patientName: 'Maryam Al-Sabah',
+                    appointmentId: 'apt-005',
+                    rating: 5,
+                    comment: 'Outstanding neurologist! Helped me understand my headache issues completely.',
+                    createdAt: new Date(Date.now() - 777600000).toISOString() // 9 days ago
+                },
+                {
+                    id: 'review_006',
+                    doctorId: 'doctor-001',
+                    patientId: 'patient-006',
+                    patientName: 'Ali Al-Thani',
+                    appointmentId: 'apt-006',
+                    rating: 4,
+                    comment: 'Good follow-up care. Doctor is knowledgeable and patient with questions.',
+                    createdAt: new Date(Date.now() - 86400000).toISOString() // 1 day ago
+                },
+                {
+                    id: 'review_007',
+                    doctorId: 'doctor-002',
+                    patientId: 'patient-007',
+                    patientName: 'Noora Al-Khalil',
+                    appointmentId: 'apt-007',
+                    rating: 5,
+                    comment: 'Wonderful experience! Dr. Fatima is gentle and very good with children.',
+                    createdAt: new Date(Date.now() - 43200000).toISOString() // 12 hours ago
+                }
+            ];
+
+            localStorage.setItem('patientcare_reviews', JSON.stringify(reviews));
+        }
+
+        function initializePrescriptions() {
+            const prescriptions = [
+                // Prescriptions linked to real appointments and patients
+                {
+                    id: 'prescription-001',
+                    patientId: 'patient-001',
+                    patientName: 'Sarah Al-Khalifa',
+                    patientEmail: 'patient@patientcare.bh',
+                    doctorId: 'doctor-001',
+                    doctorName: 'Dr. Ahmed Al-Mansouri',
+                    medications: [
+                        {
+                            name: 'Atenolol',
+                            dosage: '25mg',
+                            frequency: 'Once daily',
+                            duration: '30 days',
+                            instructions: 'Take in the morning with food. Monitor blood pressure regularly.'
+                        },
+                        {
+                            name: 'Aspirin',
+                            dosage: '75mg',
+                            frequency: 'Once daily',
+                            duration: '30 days',
+                            instructions: 'Take with food to prevent stomach irritation.'
+                        }
+                    ],
+                    diagnosis: 'Mild Hypertension',
+                    notes: 'Follow up in 2 weeks. Monitor blood pressure daily. Reduce salt intake.',
+                    dateIssued: new Date(Date.now() - 604800000).toISOString().split('T')[0], // 1 week ago
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 604800000).toISOString(),
+                    updatedAt: new Date(Date.now() - 604800000).toISOString()
+                },
+                {
+                    id: 'prescription-002',
+                    patientId: 'patient-004',
+                    patientName: 'Mohammed Al-Rashid',
+                    patientEmail: 'mohammed.rashid@yahoo.com',
+                    doctorId: 'doctor-004',
+                    doctorName: 'Dr. Aisha Al-Mannai',
+                    medications: [
+                        {
+                            name: 'Hydrocortisone Cream',
+                            dosage: '1%',
+                            frequency: 'Apply twice daily',
+                            duration: '14 days',
+                            instructions: 'Apply thin layer to affected area. Wash hands after application.'
+                        },
+                        {
+                            name: 'Cetirizine',
+                            dosage: '10mg',
+                            frequency: 'Once daily at bedtime',
+                            duration: '7 days',
+                            instructions: 'May cause drowsiness. Avoid alcohol.'
+                        }
+                    ],
+                    diagnosis: 'Allergic Dermatitis',
+                    notes: 'Avoid known allergens. Return if condition worsens or no improvement in 1 week.',
+                    dateIssued: new Date(Date.now() - 259200000).toISOString().split('T')[0], // 3 days ago
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 259200000).toISOString(),
+                    updatedAt: new Date(Date.now() - 259200000).toISOString()
+                },
+                {
+                    id: 'prescription-003',
+                    patientId: 'patient-005',
+                    patientName: 'Maryam Al-Sabah',
+                    patientEmail: 'maryam.sabah@gmail.com',
+                    doctorId: 'doctor-005',
+                    doctorName: 'Dr. Hassan Al-Fadhel',
+                    medications: [
+                        {
+                            name: 'Sumatriptan',
+                            dosage: '50mg',
+                            frequency: 'As needed for headache',
+                            duration: '30 days supply',
+                            instructions: 'Take at first sign of headache. Maximum 2 tablets per day.'
+                        },
+                        {
+                            name: 'Propranolol',
+                            dosage: '40mg',
+                            frequency: 'Twice daily',
+                            duration: '30 days',
+                            instructions: 'Take with food. Do not stop suddenly without consulting doctor.'
+                        }
+                    ],
+                    diagnosis: 'Migraine Headaches',
+                    notes: 'Keep headache diary. Avoid known triggers. Follow up in 4 weeks.',
+                    dateIssued: new Date(Date.now() - 864000000).toISOString().split('T')[0], // 10 days ago
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 864000000).toISOString(),
+                    updatedAt: new Date(Date.now() - 864000000).toISOString()
+                },
+                {
+                    id: 'prescription-004',
+                    patientId: 'patient-007',
+                    patientName: 'Noora Al-Khalil',
+                    patientEmail: 'noora.khalil@gmail.com',
+                    doctorId: 'doctor-002',
+                    doctorName: 'Dr. Fatima Al-Zahra',
+                    medications: [
+                        {
+                            name: 'Paracetamol Syrup',
+                            dosage: '5ml (120mg)',
+                            frequency: 'Every 6 hours as needed',
+                            duration: '5 days',
+                            instructions: 'For fever or pain. Do not exceed 4 doses in 24 hours.'
+                        }
+                    ],
+                    diagnosis: 'Post-vaccination fever',
+                    notes: 'Normal reaction to vaccination. Monitor temperature. Return if fever persists beyond 48 hours.',
+                    dateIssued: new Date(Date.now() - 86400000).toISOString().split('T')[0], // Yesterday
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 86400000).toISOString(),
+                    updatedAt: new Date(Date.now() - 86400000).toISOString()
+                },
+                {
+                    id: 'prescription-005',
+                    patientId: 'patient-003',
+                    patientName: 'Fatema Al-Zahra',
+                    patientEmail: 'fatema.zahra@outlook.com',
+                    doctorId: 'doctor-003',
+                    doctorName: 'Dr. Mohammed Al-Khalifa',
+                    medications: [
+                        {
+                            name: 'Ibuprofen',
+                            dosage: '400mg',
+                            frequency: 'Three times daily with food',
+                            duration: '10 days',
+                            instructions: 'Take after meals. Stop if stomach upset occurs.'
+                        },
+                        {
+                            name: 'Diclofenac Gel',
+                            dosage: '1%',
+                            frequency: 'Apply 3-4 times daily',
+                            duration: '14 days',
+                            instructions: 'Apply to affected knee area. Wash hands after use.'
+                        },
+                        {
+                            name: 'Calcium + Vitamin D3',
+                            dosage: '500mg + 200IU',
+                            frequency: 'Once daily with dinner',
+                            duration: '30 days',
+                            instructions: 'For bone health support during recovery.'
+                        }
+                    ],
+                    diagnosis: 'Knee Joint Inflammation (Osteoarthritis)',
+                    notes: 'Physical therapy recommended. Avoid high-impact activities. Follow up in 2 weeks.',
+                    dateIssued: new Date(Date.now() - 1209600000).toISOString().split('T')[0], // 2 weeks ago
+                    status: 'completed',
+                    createdAt: new Date(Date.now() - 1209600000).toISOString(),
+                    updatedAt: new Date(Date.now() - 1209600000).toISOString()
+                },
+                {
+                    id: 'prescription-006',
+                    patientId: 'patient-006',
+                    patientName: 'Ali Al-Thani',
+                    patientEmail: 'ali.thani@hotmail.com',
+                    doctorId: 'doctor-001',
+                    doctorName: 'Dr. Ahmed Al-Mansouri',
+                    medications: [
+                        {
+                            name: 'Metoprolol',
+                            dosage: '50mg',
+                            frequency: 'Twice daily',
+                            duration: '30 days',
+                            instructions: 'Take at same time daily. Do not stop abruptly.'
+                        },
+                        {
+                            name: 'Clopidogrel',
+                            dosage: '75mg',
+                            frequency: 'Once daily',
+                            duration: '30 days',
+                            instructions: 'Take with food. Report any unusual bleeding.'
+                        },
+                        {
+                            name: 'Atorvastatin',
+                            dosage: '20mg',
+                            frequency: 'Once daily at bedtime',
+                            duration: '30 days',
+                            instructions: 'Take in evening. Avoid grapefruit juice.'
+                        }
+                    ],
+                    diagnosis: 'Coronary Artery Disease - Post Cardiac Catheterization',
+                    notes: 'Cardiac rehabilitation program recommended. Low sodium diet. Regular exercise as tolerated.',
+                    dateIssued: new Date(Date.now() - 172800000).toISOString().split('T')[0], // 2 days ago
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 172800000).toISOString(),
+                    updatedAt: new Date(Date.now() - 172800000).toISOString()
+                },
+                {
+                    id: 'prescription-007',
+                    patientId: 'patient-002',
+                    patientName: 'Ahmed Al-Mahmood',
+                    patientEmail: 'ahmed.mahmood@gmail.com',
+                    doctorId: 'doctor-002',
+                    doctorName: 'Dr. Fatima Al-Zahra',
+                    medications: [
+                        {
+                            name: 'Amoxicillin Suspension',
+                            dosage: '250mg/5ml',
+                            frequency: '5ml three times daily',
+                            duration: '7 days',
+                            instructions: 'Complete full course. Take with food. Shake well before use.'
+                        },
+                        {
+                            name: 'Probiotics',
+                            dosage: '1 sachet',
+                            frequency: 'Once daily',
+                            duration: '14 days',
+                            instructions: 'Mix with cool water or milk. Take 2 hours after antibiotic.'
+                        }
+                    ],
+                    diagnosis: 'Acute Otitis Media (Ear Infection)',
+                    notes: 'Keep ears dry. Return if symptoms worsen or no improvement in 48 hours.',
+                    dateIssued: new Date(Date.now() - 432000000).toISOString().split('T')[0], // 5 days ago
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 432000000).toISOString(),
+                    updatedAt: new Date(Date.now() - 432000000).toISOString()
+                },
+                {
+                    id: 'prescription-008',
+                    patientId: 'patient-011',
+                    patientName: 'Aisha Al-Mannai',
+                    patientEmail: 'aisha.mannai@hotmail.com',
+                    doctorId: 'doctor-011',
+                    doctorName: 'Dr. Latifa Al-Zayani',
+                    medications: [
+                        {
+                            name: 'Metformin',
+                            dosage: '500mg',
+                            frequency: 'Twice daily with meals',
+                            duration: '30 days',
+                            instructions: 'Take with breakfast and dinner. May cause stomach upset initially.'
+                        },
+                        {
+                            name: 'Glimepiride',
+                            dosage: '2mg',
+                            frequency: 'Once daily before breakfast',
+                            duration: '30 days',
+                            instructions: 'Take 30 minutes before first meal. Monitor for low blood sugar.'
+                        },
+                        {
+                            name: 'Glucose Test Strips',
+                            dosage: '50 strips',
+                            frequency: 'As needed for monitoring',
+                            duration: '30 days',
+                            instructions: 'Check blood sugar twice daily. Record readings in diary.'
+                        }
+                    ],
+                    diagnosis: 'Type 2 Diabetes Mellitus - Newly Diagnosed',
+                    notes: 'Diabetes education session scheduled. Diet counseling recommended. Follow up in 2 weeks.',
+                    dateIssued: new Date(Date.now() - 1296000000).toISOString().split('T')[0], // 15 days ago
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 1296000000).toISOString(),
+                    updatedAt: new Date(Date.now() - 1296000000).toISOString()
+                }
+            ];
+
+            localStorage.setItem('patientcare_prescriptions', JSON.stringify(prescriptions));
+        }
+
+        function initializeAvailability() {
+            const availability = [
+                {
+                    doctorId: 'doctor-001',
+                    availability: {
+                        sunday: { available: false, startTime: '08:00', endTime: '17:00' },
+                        monday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        tuesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        wednesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        thursday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        friday: { available: false, startTime: '08:00', endTime: '17:00' },
+                        saturday: { available: false, startTime: '08:00', endTime: '17:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-002',
+                    availability: {
+                        sunday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        monday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        tuesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        wednesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        thursday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        friday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        saturday: { available: true, startTime: '09:00', endTime: '13:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-003',
+                    availability: {
+                        sunday: { available: false, startTime: '10:00', endTime: '18:00' },
+                        monday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        tuesday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        wednesday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        thursday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        friday: { available: false, startTime: '10:00', endTime: '18:00' },
+                        saturday: { available: false, startTime: '10:00', endTime: '18:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-004',
+                    availability: {
+                        sunday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        monday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        tuesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        wednesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        thursday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        friday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        saturday: { available: true, startTime: '10:00', endTime: '14:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-005',
+                    availability: {
+                        sunday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        monday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        tuesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        wednesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        thursday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        friday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        saturday: { available: false, startTime: '08:00', endTime: '16:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-006',
+                    availability: {
+                        sunday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        monday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        tuesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        wednesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        thursday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        friday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        saturday: { available: true, startTime: '09:00', endTime: '13:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-007',
+                    availability: {
+                        sunday: { available: false, startTime: '10:00', endTime: '18:00' },
+                        monday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        tuesday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        wednesday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        thursday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        friday: { available: false, startTime: '10:00', endTime: '18:00' },
+                        saturday: { available: false, startTime: '10:00', endTime: '18:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-008',
+                    availability: {
+                        sunday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        monday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        tuesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        wednesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        thursday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        friday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        saturday: { available: false, startTime: '08:00', endTime: '16:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-009',
+                    availability: {
+                        sunday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        monday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        tuesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        wednesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        thursday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        friday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        saturday: { available: true, startTime: '10:00', endTime: '14:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-010',
+                    availability: {
+                        sunday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        monday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        tuesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        wednesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        thursday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        friday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        saturday: { available: false, startTime: '09:00', endTime: '17:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-011',
+                    availability: {
+                        sunday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        monday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        tuesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        wednesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        thursday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        friday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        saturday: { available: true, startTime: '09:00', endTime: '13:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-012',
+                    availability: {
+                        sunday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        monday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        tuesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        wednesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        thursday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        friday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        saturday: { available: false, startTime: '09:00', endTime: '17:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-013',
+                    availability: {
+                        sunday: { available: false, startTime: '10:00', endTime: '18:00' },
+                        monday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        tuesday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        wednesday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        thursday: { available: true, startTime: '10:00', endTime: '18:00' },
+                        friday: { available: false, startTime: '10:00', endTime: '18:00' },
+                        saturday: { available: true, startTime: '10:00', endTime: '14:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-014',
+                    availability: {
+                        sunday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        monday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        tuesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        wednesday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        thursday: { available: true, startTime: '08:00', endTime: '16:00' },
+                        friday: { available: false, startTime: '08:00', endTime: '16:00' },
+                        saturday: { available: false, startTime: '08:00', endTime: '16:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    doctorId: 'doctor-015',
+                    availability: {
+                        sunday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        monday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        tuesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        wednesday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        thursday: { available: true, startTime: '09:00', endTime: '17:00' },
+                        friday: { available: false, startTime: '09:00', endTime: '17:00' },
+                        saturday: { available: true, startTime: '10:00', endTime: '14:00' }
+                    },
+                    dateOverrides: [],
+                    updatedAt: new Date().toISOString()
+                }
+            ];
+
+            localStorage.setItem('patientcare_doctor_availability', JSON.stringify(availability));
+        }
+
+        function updateDoctorRatings() {
+            // Get reviews and users
+            const reviews = JSON.parse(localStorage.getItem('patientcare_reviews') || '[]');
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+
+            // Calculate ratings for each doctor based on actual reviews
+            const doctorRatings = {};
+            reviews.forEach(review => {
+                if (!doctorRatings[review.doctorId]) {
+                    doctorRatings[review.doctorId] = {
+                        totalRating: 0,
+                        count: 0
+                    };
+                }
+                doctorRatings[review.doctorId].totalRating += review.rating;
+                doctorRatings[review.doctorId].count += 1;
+            });
+
+            // Update doctor records with calculated ratings
+            users.forEach(user => {
+                if (user.userType === 'doctor' && doctorRatings[user.id]) {
+                    const stats = doctorRatings[user.id];
+                    user.rating = Math.round((stats.totalRating / stats.count) * 10) / 10;
+                    user.reviewCount = stats.count;
+                    user.totalReviews = stats.count;
+                }
+            });
+
+            // Save updated users
+            localStorage.setItem('registeredUsers', JSON.stringify(users));
+        }
+
+        function setCurrentUserData() {
+            // Set current user as Lulwa Alali (matching your screenshot)
+            const userData = {
+                id: '1761638956342',
+                name: 'Lulwa Alali',
+                email: 'doct@docto.co',
+                userType: 'patient',
+                phone: '+973-1234-5678',
+                location: 'Manama, Bahrain'
+            };
+
+            localStorage.setItem('userData', JSON.stringify(userData));
+
+            // Set selected doctor
+            const selectedDoctor = {
+                id: 'doctor-002',
+                name: 'Dr. Fatima Al-Zahra',
+                email: 'fatima.zahra@bmc.bh',
+                specialization: 'Pediatrics'
+            };
+
+            localStorage.setItem('selectedDoctor', JSON.stringify(selectedDoctor));
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                const keys = [
+                    'authToken',
+                    'registeredUsers',
+                    'patientcare_appointments',
+                    'patientcare_blogs',
+                    'patientcare_doctor_availability',
+                    'patientcare_prescriptions',
+                    'patientcare_reviews',
+                    'selectedDoctor',
+                    'userData'
+                ];
+
+                keys.forEach(key => localStorage.removeItem(key));
+                showStatus('🗑️ All data cleared successfully!', 'warning');
+
+                setTimeout(() => {
+                    document.getElementById('dataSummary').style.display = 'none';
+                }, 1000);
+            }
+        }
+
+        function checkCurrentData() {
+            const keys = [
+                'authToken',
+                'registeredUsers',
+                'patientcare_appointments',
+                'patientcare_blogs',
+                'patientcare_doctor_availability',
+                'patientcare_prescriptions',
+                'patientcare_reviews',
+                'selectedDoctor',
+                'userData'
+            ];
+
+            const dataItems = document.getElementById('dataItems');
+            const dataSummary = document.getElementById('dataSummary');
+
+            let html = '';
+            let totalItems = 0;
+
+            keys.forEach(key => {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        const count = Array.isArray(parsed) ? parsed.length : 1;
+                        totalItems += count;
+                        html += `<div class="data-item"><strong>${key}:</strong> ${count} item(s)</div>`;
+                    } catch (e) {
+                        html += `<div class="data-item"><strong>${key}:</strong> 1 item (string)</div>`;
+                        totalItems += 1;
+                    }
+                } else {
+                    html += `<div class="data-item"><strong>${key}:</strong> <em>Not found</em></div>`;
+                }
+            });
+
+            dataItems.innerHTML = html;
+            dataSummary.style.display = 'block';
+
+            if (totalItems > 0) {
+                showStatus(`📊 Found ${totalItems} data items in localStorage`, 'success');
+            } else {
+                showStatus('📭 No data found in localStorage', 'warning');
+            }
+        }
+
+        // Check data on page load
+        window.onload = function () {
+            showStatus('Ready to initialize PatientCare demo data', 'info');
+            checkCurrentData();
+        };
+    </script>
+</body>
+
+</html>

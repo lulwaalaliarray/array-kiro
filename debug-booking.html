@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatientCare - Debug Booking</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 8px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #0f766e;
+        }
+        .success {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .error {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .info {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            color: #0c4a6e;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .data-display {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>PatientCare - Booking Debug Tool</h1>
+            <p>Use this tool to debug the appointment booking system.</p>
+            
+            <div>
+                <button class="button" onclick="checkCurrentUser()">Check Current User</button>
+                <button class="button" onclick="checkDoctors()">Check Available Doctors</button>
+                <button class="button" onclick="checkAppointments()">Check Appointments</button>
+                <button class="button" onclick="simulateBooking()">Simulate Booking</button>
+            </div>
+
+            <div id="results"></div>
+        </div>
+
+        <div class="card">
+            <h2>Current Session Data</h2>
+            <div class="data-display" id="sessionData">
+                <p>Click "Check Current User" to load session data...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Available Doctors</h2>
+            <div class="data-display" id="doctorsData">
+                <p>Click "Check Available Doctors" to load doctors...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Appointments</h2>
+            <div class="data-display" id="appointmentsData">
+                <p>Click "Check Appointments" to load appointments...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Storage utilities
+        const userStorage = {
+            getAllUsers: () => {
+                try {
+                    return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                } catch {
+                    return [];
+                }
+            }
+        };
+
+        const appointmentStorage = {
+            getAllAppointments: () => {
+                try {
+                    const stored = localStorage.getItem('patientcare_appointments');
+                    return stored ? JSON.parse(stored) : [];
+                } catch (error) {
+                    console.error('Error loading appointments:', error);
+                    return [];
+                }
+            },
+
+            addAppointment: (appointment) => {
+                try {
+                    const appointments = appointmentStorage.getAllAppointments();
+                    const newAppointment = {
+                        ...appointment,
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    appointments.push(newAppointment);
+                    localStorage.setItem('patientcare_appointments', JSON.stringify(appointments));
+                    return newAppointment;
+                } catch (error) {
+                    console.error('Error adding appointment:', error);
+                    return null;
+                }
+            }
+        };
+
+        function showResult(message, type = 'success') {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function checkCurrentUser() {
+            const userData = localStorage.getItem('userData');
+            const authToken = localStorage.getItem('authToken');
+            
+            const sessionDiv = document.getElementById('sessionData');
+            
+            if (!userData || !authToken) {
+                sessionDiv.innerHTML = '<p style="color: #ef4444;">No user logged in. Please log in to PatientCare first.</p>';
+                showResult('No user session found. Please log in to PatientCare first.', 'error');
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userData);
+                sessionDiv.innerHTML = `
+                    <strong>User Data:</strong><br>
+                    ID: ${user.id || 'MISSING'}<br>
+                    Name: ${user.name || 'MISSING'}<br>
+                    Email: ${user.email || 'MISSING'}<br>
+                    Type: ${user.userType || 'MISSING'}<br>
+                    Status: ${user.status || 'MISSING'}<br><br>
+                    <strong>Auth Token:</strong> ${authToken ? 'Present' : 'Missing'}<br><br>
+                    <strong>Full User Object:</strong><br>
+                    <pre>${JSON.stringify(user, null, 2)}</pre>
+                `;
+                
+                if (user.id && user.name && user.email) {
+                    showResult('User session is valid and complete.', 'success');
+                } else {
+                    showResult('User session is incomplete. Missing required fields.', 'error');
+                }
+            } catch (error) {
+                sessionDiv.innerHTML = `<p style="color: #ef4444;">Error parsing user data: ${error.message}</p>`;
+                showResult('Invalid user session data.', 'error');
+            }
+        }
+
+        function checkDoctors() {
+            const users = userStorage.getAllUsers();
+            const doctors = users.filter(user => user.userType === 'doctor' && (user.status === 'verified' || user.status === 'active'));
+            
+            const doctorsDiv = document.getElementById('doctorsData');
+            
+            if (doctors.length === 0) {
+                doctorsDiv.innerHTML = '<p style="color: #ef4444;">No doctors found. Please initialize demo users first.</p>';
+                showResult('No doctors found in the system.', 'error');
+                return;
+            }
+
+            doctorsDiv.innerHTML = `
+                <strong>Found ${doctors.length} doctors:</strong><br><br>
+                ${doctors.map(doctor => `
+                    <strong>${doctor.name}</strong><br>
+                    ID: ${doctor.id}<br>
+                    Email: ${doctor.email}<br>
+                    Specialization: ${doctor.specialization || 'N/A'}<br>
+                    Status: ${doctor.status}<br>
+                    Fee: ${doctor.consultationFee || 'N/A'} BHD<br><br>
+                `).join('')}
+            `;
+            
+            showResult(`Found ${doctors.length} available doctors.`, 'success');
+        }
+
+        function checkAppointments() {
+            const appointments = appointmentStorage.getAllAppointments();
+            
+            const appointmentsDiv = document.getElementById('appointmentsData');
+            
+            if (appointments.length === 0) {
+                appointmentsDiv.innerHTML = '<p>No appointments found.</p>';
+                showResult('No appointments in the system.', 'info');
+                return;
+            }
+
+            appointmentsDiv.innerHTML = `
+                <strong>Found ${appointments.length} appointments:</strong><br><br>
+                ${appointments.map(apt => `
+                    <strong>Appointment ${apt.id}</strong><br>
+                    Patient: ${apt.patientName} (${apt.patientEmail})<br>
+                    Doctor: ${apt.doctorName}<br>
+                    Date: ${apt.date} at ${apt.time}<br>
+                    Status: ${apt.status}<br>
+                    Fee: ${apt.fee} BHD<br>
+                    Notes: ${apt.notes || 'None'}<br><br>
+                `).join('')}
+            `;
+            
+            showResult(`Found ${appointments.length} appointments.`, 'success');
+        }
+
+        function simulateBooking() {
+            // Check if user is logged in
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                showResult('Please log in to PatientCare first before testing booking.', 'error');
+                return;
+            }
+
+            let currentUser;
+            try {
+                currentUser = JSON.parse(userData);
+            } catch (error) {
+                showResult('Invalid user session. Please log in again.', 'error');
+                return;
+            }
+
+            // Get available doctors
+            const users = userStorage.getAllUsers();
+            const doctors = users.filter(user => user.userType === 'doctor' && (user.status === 'verified' || user.status === 'active'));
+            
+            if (doctors.length === 0) {
+                showResult('No doctors available for booking.', 'error');
+                return;
+            }
+
+            // Use the first available doctor
+            const doctor = doctors[0];
+
+            // Create test appointment
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const appointmentDate = tomorrow.toISOString().split('T')[0];
+
+            try {
+                const newAppointment = appointmentStorage.addAppointment({
+                    patientId: currentUser.id,
+                    patientName: currentUser.name,
+                    patientEmail: currentUser.email,
+                    doctorId: doctor.id,
+                    doctorName: doctor.name,
+                    date: appointmentDate,
+                    time: '10:00',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'pending',
+                    notes: `Test booking with ${doctor.name} - ${doctor.specialization}`,
+                    fee: doctor.consultationFee || 50
+                });
+
+                if (newAppointment) {
+                    showResult(`✅ Test booking successful! Appointment created with ${doctor.name} for ${appointmentDate} at 10:00 AM. Appointment ID: ${newAppointment.id}`, 'success');
+                    
+                    // Refresh appointments display
+                    setTimeout(checkAppointments, 500);
+                } else {
+                    showResult('❌ Failed to create test appointment.', 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Error during test booking: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-load on page load
+        window.onload = function() {
+            checkCurrentUser();
+        };
+    </script>
+</body>
+</html>

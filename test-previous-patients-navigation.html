@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Previous Patients Navigation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .info {
+            color: #0d9488;
+            font-weight: bold;
+        }
+        .route-test {
+            padding: 10px;
+            margin: 10px 0;
+            background: #f0fdfa;
+            border-left: 4px solid #0d9488;
+        }
+    </style>
+</head>
+<body>
+    <h1>Previous Patients Navigation Test</h1>
+    
+    <div class="test-section">
+        <h2>✅ Navigation Routes Updated</h2>
+        <p class="success">Successfully added routes to navigation.ts:</p>
+        <div class="route-test">
+            <strong>pastPatients:</strong> '/past-patients'<br>
+            <strong>writePrescription:</strong> '/write-prescription'
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Dashboard Component Updated</h2>
+        <p class="success">Admin dashboard now includes:</p>
+        <ul>
+            <li><strong>Previous Patients</strong> - Links to <code>routes.pastPatients</code></li>
+            <li><strong>Write Prescription</strong> - Links to <code>routes.writePrescription</code></li>
+            <li>System-wide statistics for admin users</li>
+            <li>Admin-specific greeting and labels</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ DoctorDashboard Component Updated</h2>
+        <p class="success">Doctor dashboard "View All" button now:</p>
+        <ul>
+            <li>Properly navigates to <code>routes.pastPatients</code></li>
+            <li>No longer shows "coming soon" message</li>
+            <li>Uses consistent route definitions</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Navigation Flow</h2>
+        <p class="info">The following navigation paths are now properly configured:</p>
+        <ol>
+            <li><strong>Doctor Dashboard</strong> → "View All" button → Previous Patients page</li>
+            <li><strong>Admin Dashboard</strong> → "Previous Patients" card → Previous Patients page</li>
+            <li><strong>Admin Dashboard</strong> → "Write Prescription" card → Write Prescription page</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Testing Instructions</h2>
+        <p>To test the navigation:</p>
+        <ol>
+            <li>Log in as a doctor user</li>
+            <li>Go to the dashboard</li>
+            <li>Click the "View All" button in the Previous Patients section</li>
+            <li>Verify it navigates to the Previous Patients page</li>
+        </ol>
+        <p>For admin users:</p>
+        <ol>
+            <li>Log in as an admin user</li>
+            <li>Go to the dashboard</li>
+            <li>Click the "Previous Patients" quick action card</li>
+            <li>Verify it navigates to the Previous Patients page</li>
+        </ol>
+    </div>
+
+    <script>
+        console.log('Previous Patients Navigation Test Page Loaded');
+        console.log('Routes added: pastPatients: /past-patients, writePrescription: /write-prescription');
+        console.log('Navigation updated in Dashboard and DoctorDashboard components');
+    </script>
+</body>
+</html>

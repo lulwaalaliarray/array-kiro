@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Prescription Printing - PatientCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #6366f1; }
+        .feature {
+            background: #f0fdfa;
+            padding: 12px;
+            border-left: 4px solid #0d9488;
+            margin: 10px 0;
+        }
+        .step {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 3px solid #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖨️ PatientCare Prescription Printing Test</h1>
+        <p>This page explains how the improved prescription printing functionality works.</p>
+        
+        <div class="test-section">
+            <h3>🎯 What's New in Prescription Printing</h3>
+            <p>The prescription printing feature has been enhanced to provide a better user experience:</p>
+            
+            <div class="feature">
+                <strong>✅ Print Only Prescription Content</strong><br>
+                Opens a new window with only the prescription details, not the entire page
+            </div>
+            
+            <div class="feature">
+                <strong>✅ Professional Layout</strong><br>
+                Clean, medical-grade formatting with proper spacing and typography
+            </div>
+            
+            <div class="feature">
+                <strong>✅ Print-Optimized Styling</strong><br>
+                Special CSS for print media ensures perfect paper output
+            </div>
+            
+            <div class="feature">
+                <strong>✅ Auto-Print Functionality</strong><br>
+                Automatically opens print dialog when the prescription window loads
+            </div>
+            
+            <div class="feature">
+                <strong>✅ Error Handling</strong><br>
+                Graceful handling of pop-up blockers and print failures
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 How to Test Prescription Printing</h3>
+            
+            <div class="step">
+                <strong>Step 1:</strong> Login as a patient using <code>patient@patientcare.bh</code> / <code>password</code>
+            </div>
+            
+            <div class="step">
+                <strong>Step 2:</strong> Navigate to "View Prescriptions" (usually found in patient dashboard or profile)
+            </div>
+            
+            <div class="step">
+                <strong>Step 3:</strong> Find any prescription in your list
+            </div>
+            
+            <div class="step">
+                <strong>Step 4:</strong> Click the "Print" button (🖨️ icon) next to the prescription
+            </div>
+            
+            <div class="step">
+                <strong>Step 5:</strong> A new window will open with the formatted prescription
+            </div>
+            
+            <div class="step">
+                <strong>Step 6:</strong> The print dialog will automatically appear
+            </div>
+            
+            <div class="step">
+                <strong>Step 7:</strong> Choose your printer and print settings, then print
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🖨️ Print Features</h3>
+            
+            <h4>What Gets Printed:</h4>
+            <ul>
+                <li><strong>Header:</strong> PatientCare logo and "Official Medical Prescription" title</li>
+                <li><strong>Patient Info:</strong> Name and email address</li>
+                <li><strong>Doctor Info:</strong> Prescribing doctor name and date issued</li>
+                <li><strong>Diagnosis:</strong> Medical diagnosis with highlighted formatting</li>
+                <li><strong>Medications:</strong> Complete medication list with dosage, frequency, and duration</li>
+                <li><strong>Instructions:</strong> Special instructions for each medication (if any)</li>
+                <li><strong>Notes:</strong> Additional notes from the doctor (if any)</li>
+                <li><strong>Footer:</strong> Prescription ID and print timestamp</li>
+            </ul>
+            
+            <h4>Print Optimizations:</h4>
+            <ul>
+                <li>A4 paper size optimization</li>
+                <li>Proper margins and spacing</li>
+                <li>Page break avoidance for medication blocks</li>
+                <li>High contrast colors for better readability</li>
+                <li>Professional medical document formatting</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Technical Details</h3>
+            
+            <h4>How It Works:</h4>
+            <ol>
+                <li><strong>New Window Creation:</strong> Opens a popup window with specific dimensions</li>
+                <li><strong>Content Generation:</strong> Dynamically creates HTML with prescription data</li>
+                <li><strong>Styling Application:</strong> Applies print-optimized CSS styles</li>
+                <li><strong>Auto-Print Trigger:</strong> Automatically calls window.print() when loaded</li>
+                <li><strong>Window Management:</strong> Closes the window after printing completes</li>
+            </ol>
+            
+            <h4>Error Handling:</h4>
+            <ul>
+                <li>Pop-up blocker detection and user notification</li>
+                <li>Print failure handling with fallback instructions</li>
+                <li>Keyboard shortcuts (Ctrl+P to print, Escape to close)</li>
+                <li>Automatic window cleanup after 10 seconds if needed</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🎨 Print Layout Preview</h3>
+            <p>The printed prescription includes these sections in order:</p>
+            
+            <div style="border: 2px solid #0d9488; border-radius: 8px; padding: 15px; background: #f8fafc;">
+                <div style="background: #0d9488; color: white; padding: 10px; text-align: center; margin: -15px -15px 15px -15px;">
+                    <strong>PatientCare - Official Medical Prescription</strong>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <strong>Patient Information</strong><br>
+                        <small>Name, Email</small>
+                    </div>
+                    <div>
+                        <strong>Prescription Details</strong><br>
+                        <small>Doctor, Date</small>
+                    </div>
+                </div>
+                
+                <div style="background: #ecfdf5; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+                    <strong>🩺 Medical Diagnosis</strong><br>
+                    <small>Patient's condition and diagnosis</small>
+                </div>
+                
+                <div style="background: #f0fdf4; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+                    <strong>💊 Prescribed Medications</strong><br>
+                    <small>Medication name, dosage, frequency, duration, instructions</small>
+                </div>
+                
+                <div style="background: #fef3c7; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+                    <strong>📝 Additional Notes</strong><br>
+                    <small>Doctor's additional instructions (if any)</small>
+                </div>
+                
+                <div style="text-align: center; border-top: 1px solid #e5e7eb; padding-top: 10px; font-size: 12px; color: #6b7280;">
+                    <strong>Footer:</strong> Platform info, Prescription ID, Print timestamp
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🚀 Quick Test</h3>
+            <p>Ready to test? Here's the fastest way:</p>
+            <ol>
+                <li>Open PatientCare application</li>
+                <li>Login as patient</li>
+                <li>Go to prescriptions section</li>
+                <li>Click any "Print" button</li>
+                <li>Verify that only the prescription content appears in the print preview</li>
+            </ol>
+            
+            <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <strong>💡 Pro Tip:</strong> If you see a pop-up blocker warning, allow pop-ups for the PatientCare domain to enable seamless prescription printing.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🖨️ Prescription Print Test Page Loaded');
+        console.log('✅ This page demonstrates the prescription printing functionality');
+        console.log('📝 The actual printing happens in the ViewPrescriptions component');
+        console.log('🎯 Key improvement: Only prescription content is printed, not the entire page');
+    </script>
+</body>
+</html>

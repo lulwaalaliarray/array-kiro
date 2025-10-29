@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Doctor Navigation - PatientCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .nav-item {
+            background: #f0fdfa;
+            padding: 12px;
+            border-left: 4px solid #0d9488;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+        .user-type {
+            background: #dbeafe;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 3px solid #3b82f6;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .doctor-nav, .patient-nav {
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        .doctor-nav {
+            background: #ecfdf5;
+            border-color: #10b981;
+        }
+        .patient-nav {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👨‍⚕️ Doctor Navigation Test - PatientCare</h1>
+        <p>This page explains the updated navigation bar for doctors with the new navigation items.</p>
+        
+        <div class="test-section">
+            <h3>🎯 Navigation Updates</h3>
+            <p>The navigation bar now shows different items based on user type:</p>
+            
+            <div class="comparison">
+                <div class="doctor-nav">
+                    <h4>👨‍⚕️ Doctor Navigation</h4>
+                    <div class="nav-item">🏠 <strong>Home</strong> - Main dashboard</div>
+                    <div class="nav-item">👥 <strong>Past Patients</strong> - View patient history</div>
+                    <div class="nav-item">📝 <strong>Write Prescriptions</strong> - Create prescriptions</div>
+                    <div class="nav-item">📅 <strong>My Appointments</strong> - Manage appointments</div>
+                    <div class="nav-item">📰 <strong>Blog</strong> - Medical blog posts</div>
+                    <div class="nav-item">📞 <strong>Contact</strong> - Contact information</div>
+                </div>
+                
+                <div class="patient-nav">
+                    <h4>👤 Patient Navigation</h4>
+                    <div class="nav-item">🏠 <strong>Home</strong> - Main dashboard</div>
+                    <div class="nav-item">🔍 <strong>Find Doctors</strong> - Search doctors</div>
+                    <div class="nav-item">💊 <strong>Prescriptions</strong> - View prescriptions</div>
+                    <div class="nav-item">📅 <strong>My Appointments</strong> - View appointments</div>
+                    <div class="nav-item">ℹ️ <strong>About</strong> - About page</div>
+                    <div class="nav-item">📞 <strong>Contact</strong> - Contact information</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Testing Instructions</h3>
+            
+            <h4>Test Doctor Navigation:</h4>
+            <ol>
+                <li><strong>Login as Doctor:</strong> Use <code>doctor@patientcare.bh</code> / <code>password</code></li>
+                <li><strong>Check Navigation Bar:</strong> Look at the top navigation</li>
+                <li><strong>Verify Items:</strong> Should see "Past Patients" and "Write Prescriptions"</li>
+                <li><strong>Test Links:</strong> Click each navigation item to verify they work</li>
+                <li><strong>Mobile Test:</strong> Check mobile menu (hamburger icon) for same items</li>
+            </ol>
+            
+            <h4>Test Patient Navigation:</h4>
+            <ol>
+                <li><strong>Login as Patient:</strong> Use <code>patient@patientcare.bh</code> / <code>password</code></li>
+                <li><strong>Check Navigation Bar:</strong> Look at the top navigation</li>
+                <li><strong>Verify Items:</strong> Should see "Find Doctors" and "Prescriptions"</li>
+                <li><strong>No Doctor Items:</strong> Should NOT see "Past Patients" or "Write Prescriptions"</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 Navigation Routes</h3>
+            <p>The following routes are now available:</p>
+            
+            <h4>Doctor-Specific Routes:</h4>
+            <ul>
+                <li><code>/past-patients</code> - Past Patients component</li>
+                <li><code>/write-prescription</code> - Write Prescriptions component</li>
+                <li><code>/manage-availability</code> - Manage doctor availability</li>
+                <li><code>/appointments</code> - Doctor's upcoming appointments</li>
+            </ul>
+            
+            <h4>Patient-Specific Routes:</h4>
+            <ul>
+                <li><code>/find-doctors</code> - Find and book doctors</li>
+                <li><code>/prescriptions</code> - View patient prescriptions</li>
+                <li><code>/appointments</code> - Patient's appointments</li>
+            </ul>
+            
+            <h4>Common Routes:</h4>
+            <ul>
+                <li><code>/</code> - Home page</li>
+                <li><code>/profile</code> - User profile</li>
+                <li><code>/contact</code> - Contact page</li>
+                <li><code>/about</code> or <code>/blog</code> - About/Blog (user-dependent)</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🎨 Navigation Features</h3>
+            
+            <h4>Desktop Navigation:</h4>
+            <ul>
+                <li><strong>Centered Layout:</strong> Navigation items centered in header</li>
+                <li><strong>Hover Effects:</strong> Color changes on hover (#0d9488)</li>
+                <li><strong>User-Specific Items:</strong> Different items for doctors vs patients</li>
+                <li><strong>Profile Dropdown:</strong> User profile and logout options</li>
+            </ul>
+            
+            <h4>Mobile Navigation:</h4>
+            <ul>
+                <li><strong>Hamburger Menu:</strong> Collapsible mobile menu</li>
+                <li><strong>Full-Width Items:</strong> Easy touch targets</li>
+                <li><strong>Same Logic:</strong> Same user-specific navigation</li>
+                <li><strong>Profile Button:</strong> Enhanced profile access</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Technical Implementation</h3>
+            
+            <h4>Header Component Updates:</h4>
+            <ul>
+                <li><strong>User Type Detection:</strong> <code>user.userType === 'doctor'</code></li>
+                <li><strong>Conditional Rendering:</strong> Different nav items per user type</li>
+                <li><strong>Route Integration:</strong> Uses <code>routes.pastPatients</code> and <code>routes.writePrescription</code></li>
+                <li><strong>Mobile Sync:</strong> Same logic applied to mobile navigation</li>
+            </ul>
+            
+            <h4>App.tsx Route Updates:</h4>
+            <ul>
+                <li><strong>PastPatients Import:</strong> Added component import</li>
+                <li><strong>Protected Route:</strong> <code>/past-patients</code> with doctor-only access</li>
+                <li><strong>Existing Routes:</strong> <code>/write-prescription</code> already existed</li>
+                <li><strong>Route Protection:</strong> ProtectedRoute wrapper for security</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>✅ Expected Behavior</h3>
+            
+            <div class="user-type">
+                <strong>When logged in as Doctor:</strong>
+                <ul>
+                    <li>See "Past Patients" in navigation</li>
+                    <li>See "Write Prescriptions" in navigation</li>
+                    <li>See "Blog" instead of "About"</li>
+                    <li>NOT see "Find Doctors" or "Prescriptions"</li>
+                    <li>Can access all doctor-specific routes</li>
+                </ul>
+            </div>
+            
+            <div class="user-type">
+                <strong>When logged in as Patient:</strong>
+                <ul>
+                    <li>See "Find Doctors" in navigation</li>
+                    <li>See "Prescriptions" in navigation</li>
+                    <li>See "About" instead of "Blog"</li>
+                    <li>NOT see "Past Patients" or "Write Prescriptions"</li>
+                    <li>Can access all patient-specific routes</li>
+                </ul>
+            </div>
+            
+            <div class="user-type">
+                <strong>When not logged in:</strong>
+                <ul>
+                    <li>See basic navigation (Home, About, Contact)</li>
+                    <li>See "Sign In" and "Get Started" buttons</li>
+                    <li>No user-specific navigation items</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🚀 Quick Test Checklist</h3>
+            <p>Use this checklist to verify the navigation works correctly:</p>
+            
+            <h4>Doctor Login Test:</h4>
+            <input type="checkbox"> Login as doctor<br>
+            <input type="checkbox"> Verify "Past Patients" appears in nav<br>
+            <input type="checkbox"> Verify "Write Prescriptions" appears in nav<br>
+            <input type="checkbox"> Click "Past Patients" - should load past patients page<br>
+            <input type="checkbox"> Click "Write Prescriptions" - should load prescription form<br>
+            <input type="checkbox"> Check mobile menu has same items<br>
+            
+            <h4>Patient Login Test:</h4>
+            <input type="checkbox"> Login as patient<br>
+            <input type="checkbox"> Verify "Find Doctors" appears in nav<br>
+            <input type="checkbox"> Verify "Prescriptions" appears in nav<br>
+            <input type="checkbox"> Verify NO doctor-specific items appear<br>
+            <input type="checkbox"> Click navigation items to test functionality<br>
+            <input type="checkbox"> Check mobile menu matches desktop<br>
+        </div>
+    </div>
+
+    <script>
+        console.log('👨‍⚕️ Doctor Navigation Test Page Loaded');
+        console.log('✅ Navigation now shows user-specific items');
+        console.log('🎯 Doctors see: Past Patients, Write Prescriptions');
+        console.log('👤 Patients see: Find Doctors, Prescriptions');
+        console.log('📱 Mobile navigation mirrors desktop navigation');
+    </script>
+</body>
+</html>

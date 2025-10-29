@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Availability Enhancement - PatientCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { background: #d1fae5; color: #065f46; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .info { background: #dbeafe; color: #1e40af; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .feature { background: #f0fdfa; color: #0d9488; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .calendar-preview {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin: 15px 0;
+            max-width: 400px;
+        }
+        .calendar-day {
+            padding: 8px;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .calendar-header {
+            background: #f9fafb;
+            color: #6b7280;
+        }
+        .calendar-available {
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #374151;
+        }
+        .calendar-selected {
+            background: #0d9488;
+            color: white;
+            border: 2px solid #0d9488;
+        }
+        .calendar-unavailable {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            color: #dc2626;
+        }
+        .calendar-today {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <h1>📅 Calendar Availability Enhancement</h1>
+    
+    <div class="test-section">
+        <h2>✨ New Multi-Select Calendar Feature</h2>
+        <div class="success">
+            ✅ Doctors can now select multiple specific dates for leave/unavailability using an interactive calendar
+        </div>
+        
+        <h3>What's New:</h3>
+        <ul>
+            <li><strong>Interactive Calendar:</strong> Visual month view with clickable dates</li>
+            <li><strong>Multi-Select:</strong> Click multiple dates to select them at once</li>
+            <li><strong>Leave Management:</strong> Mark dates as unavailable with reasons</li>
+            <li><strong>Visual Indicators:</strong> Color-coded calendar for different states</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🎨 Calendar Preview</h2>
+        <p>Interactive calendar with multi-select functionality:</p>
+        
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <button style="padding: 6px 12px; background: white; border: 2px solid #e5e7eb; border-radius: 6px;">← Previous</button>
+                <h3 style="margin: 0; font-size: 18px;">December 2024</h3>
+                <button style="padding: 6px 12px; background: white; border: 2px solid #e5e7eb; border-radius: 6px;">Next →</button>
+            </div>
+            
+            <div class="calendar-preview">
+                <div class="calendar-day calendar-header">Sun</div>
+                <div class="calendar-day calendar-header">Mon</div>
+                <div class="calendar-day calendar-header">Tue</div>
+                <div class="calendar-day calendar-header">Wed</div>
+                <div class="calendar-day calendar-header">Thu</div>
+                <div class="calendar-day calendar-header">Fri</div>
+                <div class="calendar-day calendar-header">Sat</div>
+                
+                <div class="calendar-day calendar-available">1</div>
+                <div class="calendar-day calendar-available">2</div>
+                <div class="calendar-day calendar-available">3</div>
+                <div class="calendar-day calendar-available">4</div>
+                <div class="calendar-day calendar-available">5</div>
+                <div class="calendar-day calendar-unavailable">6</div>
+                <div class="calendar-day calendar-unavailable">7</div>
+                
+                <div class="calendar-day calendar-available">8</div>
+                <div class="calendar-day calendar-available">9</div>
+                <div class="calendar-day calendar-available">10</div>
+                <div class="calendar-day calendar-available">11</div>
+                <div class="calendar-day calendar-available">12</div>
+                <div class="calendar-day calendar-available">13</div>
+                <div class="calendar-day calendar-available">14</div>
+                
+                <div class="calendar-day calendar-today">15</div>
+                <div class="calendar-day calendar-selected">16</div>
+                <div class="calendar-day calendar-selected">17</div>
+                <div class="calendar-day calendar-available">18</div>
+                <div class="calendar-day calendar-available">19</div>
+                <div class="calendar-day calendar-available">20</div>
+                <div class="calendar-day calendar-available">21</div>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 12px; height: 12px; background: #0d9488; border-radius: 2px;"></div>
+                    <span style="font-size: 11px;">Selected</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 12px; height: 12px; background: #fee2e2; border: 1px solid #ef4444; border-radius: 2px;"></div>
+                    <span style="font-size: 11px;">Unavailable</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 12px; height: 12px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 2px;"></div>
+                    <span style="font-size: 11px;">Today</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Technical Features</h2>
+        
+        <div class="feature">
+            <strong>📅 Interactive Calendar Grid</strong><br>
+            7x6 grid layout with proper month navigation and day headers
+        </div>
+        
+        <div class="feature">
+            <strong>🖱️ Multi-Select Functionality</strong><br>
+            Click multiple dates to select/deselect them for batch operations
+        </div>
+        
+        <div class="feature">
+            <strong>🚫 Smart Date Validation</strong><br>
+            Prevents selection of past dates with user-friendly messages
+        </div>
+        
+        <div class="feature">
+            <strong>📝 Leave Reason Input</strong><br>
+            Required text field for documenting why dates are unavailable
+        </div>
+        
+        <div class="feature">
+            <strong>💾 Persistent Storage</strong><br>
+            Date overrides saved to localStorage with reasons
+        </div>
+        
+        <div class="feature">
+            <strong>🎨 Visual State Management</strong><br>
+            Color-coded calendar showing selected, unavailable, today, and past dates
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Use Cases</h2>
+        <ul>
+            <li><strong>Annual Leave:</strong> Select vacation dates in advance</li>
+            <li><strong>Medical Leave:</strong> Mark sick days or medical appointments</li>
+            <li><strong>Conferences:</strong> Block dates for professional events</li>
+            <li><strong>Holidays:</strong> Mark public holidays or religious observances</li>
+            <li><strong>Personal Time:</strong> Block dates for personal commitments</li>
+            <li><strong>Emergency Leave:</strong> Quick marking of unexpected unavailability</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🔄 Workflow Enhancement</h2>
+        
+        <h3>Before:</h3>
+        <div style="background: #fee2e2; padding: 15px; border-radius: 6px; margin: 10px 0;">
+            ❌ Only weekly recurring schedule<br>
+            ❌ No specific date management<br>
+            ❌ No leave tracking<br>
+            ❌ Limited flexibility
+        </div>
+
+        <h3>After:</h3>
+        <div style="background: #d1fae5; padding: 15px; border-radius: 6px; margin: 10px 0;">
+            ✅ Weekly schedule + specific date overrides<br>
+            ✅ Visual calendar interface<br>
+            ✅ Multi-select date management<br>
+            ✅ Leave reason documentation<br>
+            ✅ Easy date range selection<br>
+            ✅ Professional leave management
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 How to Test</h2>
+        <div class="info">
+            <ol>
+                <li>Login as a doctor</li>
+                <li>Navigate to "Manage Availability"</li>
+                <li>Scroll to "Specific Dates - Leave Management" section</li>
+                <li>Use calendar navigation (Previous/Next buttons)</li>
+                <li>Click multiple future dates to select them</li>
+                <li>Enter a reason for unavailability</li>
+                <li>Click "Mark as Unavailable"</li>
+                <li>Verify dates appear in "Currently Unavailable Dates" section</li>
+                <li>Test removing unavailable dates using the × button</li>
+                <li>Save availability and check integration with booking system</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Benefits</h2>
+        <ul>
+            <li><strong>Professional Management:</strong> Proper leave and availability tracking</li>
+            <li><strong>Patient Experience:</strong> Accurate availability prevents booking conflicts</li>
+            <li><strong>Efficiency:</strong> Bulk date selection saves time</li>
+            <li><strong>Documentation:</strong> Reasons for unavailability are recorded</li>
+            <li><strong>Flexibility:</strong> Easy to modify or remove date overrides</li>
+            <li><strong>Visual Clarity:</strong> Calendar interface is intuitive and clear</li>
+        </ul>
+    </div>
+
+    <div class="success">
+        <h3>🎉 Status: ENHANCED</h3>
+        <p>The availability management system now includes a professional multi-select calendar for specific date management, making it easy for doctors to handle leave, holidays, and other unavailability scenarios with proper documentation and visual feedback.</p>
+    </div>
+</body>
+</html>

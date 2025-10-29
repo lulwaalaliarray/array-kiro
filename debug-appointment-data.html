@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Appointment Data</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .appointment {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status-pending { background-color: #fef3c7; }
+        .status-confirmed { background-color: #dcfce7; }
+        .status-completed { background-color: #f3f4f6; }
+        .status-cancelled { background-color: #fee2e2; }
+        button {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0f766e;
+        }
+        .clear-btn {
+            background: #dc2626;
+        }
+        .clear-btn:hover {
+            background: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Appointment Data</h1>
+    
+    <div class="container">
+        <h2>Actions</h2>
+        <button onclick="loadAppointmentData()">Load Appointment Data</button>
+        <button onclick="loadUserData()">Load User Data</button>
+        <button onclick="clearLocalStorage()" class="clear-btn">Clear All Data</button>
+        <button onclick="addSampleAppointments()">Add Sample Appointments</button>
+    </div>
+
+    <div class="container">
+        <h2>Current User</h2>
+        <div id="userData"></div>
+    </div>
+
+    <div class="container">
+        <h2>All Appointments</h2>
+        <div id="appointmentData"></div>
+    </div>
+
+    <div class="container">
+        <h2>Doctor's Appointments (Filtered)</h2>
+        <div id="doctorAppointments"></div>
+    </div>
+
+    <div class="container">
+        <h2>Today's Appointments</h2>
+        <div id="todayAppointments"></div>
+    </div>
+
+    <script>
+        function loadUserData() {
+            const userData = localStorage.getItem('userData');
+            const userDiv = document.getElementById('userData');
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                userDiv.innerHTML = `
+                    <strong>Name:</strong> ${user.name}<br>
+                    <strong>Email:</strong> ${user.email}<br>
+                    <strong>ID:</strong> ${user.id}<br>
+                    <strong>User Type:</strong> ${user.userType}<br>
+                `;
+            } else {
+                userDiv.innerHTML = 'No user data found. Please log in first.';
+            }
+        }
+
+        function loadAppointmentData() {
+            const appointmentData = localStorage.getItem('patientcare_appointments');
+            const appointmentDiv = document.getElementById('appointmentData');
+            const doctorDiv = document.getElementById('doctorAppointments');
+            const todayDiv = document.getElementById('todayAppointments');
+            
+            if (appointmentData) {
+                const appointments = JSON.parse(appointmentData);
+                
+                // Show all appointments
+                appointmentDiv.innerHTML = appointments.map(apt => `
+                    <div class="appointment status-${apt.status}">
+                        <strong>ID:</strong> ${apt.id}<br>
+                        <strong>Patient:</strong> ${apt.patientName}<br>
+                        <strong>Doctor ID:</strong> ${apt.doctorId}<br>
+                        <strong>Doctor:</strong> ${apt.doctorName}<br>
+                        <strong>Date:</strong> ${apt.date}<br>
+                        <strong>Time:</strong> ${apt.time}<br>
+                        <strong>Status:</strong> ${apt.status}<br>
+                        <strong>Type:</strong> ${apt.type}
+                    </div>
+                `).join('');
+
+                // Get current user
+                const userData = localStorage.getItem('userData');
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    const doctorId = user.id || user.email;
+                    
+                    // Filter doctor's appointments
+                    const doctorAppointments = appointments.filter(apt => apt.doctorId === doctorId);
+                    doctorDiv.innerHTML = doctorAppointments.map(apt => `
+                        <div class="appointment status-${apt.status}">
+                            <strong>Patient:</strong> ${apt.patientName}<br>
+                            <strong>Date:</strong> ${apt.date}<br>
+                            <strong>Time:</strong> ${apt.time}<br>
+                            <strong>Status:</strong> ${apt.status}<br>
+                            <strong>Type:</strong> ${apt.type}
+                        </div>
+                    `).join('');
+
+                    // Filter today's appointments
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayAppointments = doctorAppointments.filter(apt => apt.date === today);
+                    todayDiv.innerHTML = `
+                        <p><strong>Today's Date:</strong> ${today}</p>
+                        <p><strong>Total Today:</strong> ${todayAppointments.length}</p>
+                        <p><strong>Confirmed Today:</strong> ${todayAppointments.filter(apt => apt.status === 'confirmed').length}</p>
+                        <p><strong>Pending Today:</strong> ${todayAppointments.filter(apt => apt.status === 'pending').length}</p>
+                        ${todayAppointments.map(apt => `
+                            <div class="appointment status-${apt.status}">
+                                <strong>Patient:</strong> ${apt.patientName}<br>
+                                <strong>Time:</strong> ${apt.time}<br>
+                                <strong>Status:</strong> ${apt.status}<br>
+                                <strong>Type:</strong> ${apt.type}
+                            </div>
+                        `).join('')}
+                    `;
+                }
+            } else {
+                appointmentDiv.innerHTML = 'No appointment data found.';
+                doctorDiv.innerHTML = 'No appointment data found.';
+                todayDiv.innerHTML = 'No appointment data found.';
+            }
+        }
+
+        function clearLocalStorage() {
+            if (confirm('This will clear all data including login. Continue?')) {
+                localStorage.clear();
+                alert('All data cleared. Please refresh the page and log in again.');
+            }
+        }
+
+        function addSampleAppointments() {
+            const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+            
+            const sampleAppointments = [
+                {
+                    id: 'debug_today_1',
+                    patientId: 'patient-debug-1',
+                    patientName: 'Debug Patient 1',
+                    patientEmail: 'debug1@test.com',
+                    doctorId: 'doctor-001',
+                    doctorName: 'Dr. Ahmed Al-Mansouri',
+                    date: today,
+                    time: '09:00',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'pending',
+                    fee: 50,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    id: 'debug_today_2',
+                    patientId: 'patient-debug-2',
+                    patientName: 'Debug Patient 2',
+                    patientEmail: 'debug2@test.com',
+                    doctorId: 'doctor-001',
+                    doctorName: 'Dr. Ahmed Al-Mansouri',
+                    date: today,
+                    time: '10:00',
+                    duration: 30,
+                    type: 'consultation',
+                    status: 'confirmed',
+                    fee: 50,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+            ];
+
+            const existingData = localStorage.getItem('patientcare_appointments');
+            const appointments = existingData ? JSON.parse(existingData) : [];
+            
+            // Add sample appointments
+            sampleAppointments.forEach(apt => {
+                if (!appointments.find(existing => existing.id === apt.id)) {
+                    appointments.push(apt);
+                }
+            });
+
+            localStorage.setItem('patientcare_appointments', JSON.stringify(appointments));
+            alert('Sample appointments added for today!');
+            loadAppointmentData();
+        }
+
+        // Load data on page load
+        window.onload = function() {
+            loadUserData();
+            loadAppointmentData();
+        };
+    </script>
+</body>
+</html>

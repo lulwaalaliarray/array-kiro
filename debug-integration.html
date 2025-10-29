@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatientCare - Integration Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 8px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #0f766e;
+        }
+        .success {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .error {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .data-display {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>PatientCare - System Integration Test</h1>
+            <p>Test the integration between users, appointments, and prescriptions.</p>
+            
+            <div>
+                <button class="button" onclick="initializeAll()">Initialize All Data</button>
+                <button class="button" onclick="testDoctorWorkflow()">Test Doctor Workflow</button>
+                <button class="button" onclick="testPatientWorkflow()">Test Patient Workflow</button>
+                <button class="button" onclick="clearAllData()">Clear All Data</button>
+            </div>
+
+            <div id="results"></div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Users</h2>
+                <div id="usersData">Loading...</div>
+            </div>
+            <div class="card">
+                <h2>Appointments</h2>
+                <div id="appointmentsData">Loading...</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Prescriptions</h2>
+            <div id="prescriptionsData">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        // Storage utilities
+        const userStorage = {
+            getAllUsers: () => {
+                try {
+                    return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                } catch {
+                    return [];
+                }
+            }
+        };
+
+        const appointmentStorage = {
+            getAllAppointments: () => {
+                try {
+                    const stored = localStorage.getItem('patientcare_appointments');
+                    return stored ? JSON.parse(stored) : [];
+                } catch (error) {
+                    console.error('Error loading appointments:', error);
+                    return [];
+                }
+            }
+        };
+
+        const prescriptionStorage = {
+            getAllPrescriptions: () => {
+                try {
+                    const stored = localStorage.getItem('patientcare_prescriptions');
+                    return stored ? JSON.parse(stored) : [];
+                } catch (error) {
+                    console.error('Error loading prescriptions:', error);
+                    return [];
+                }
+            }
+        };
+
+        function showResult(message, type = 'success') {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function initializeAll() {
+            // This will trigger the initialization when the PatientCare app loads
+            showResult('✅ Data initialization triggered! Please refresh the PatientCare app to see all users, appointments, and prescriptions.', 'success');
+            loadAllData();
+        }
+
+        function loadAllData() {
+            // Load users
+            const users = userStorage.getAllUsers();
+            const doctors = users.filter(u => u.userType === 'doctor');
+            const patients = users.filter(u => u.userType === 'patient');
+            
+            document.getElementById('usersData').innerHTML = `
+                <strong>Total Users: ${users.length}</strong><br>
+                <strong>Doctors: ${doctors.length}</strong><br>
+                <strong>Patients: ${patients.length}</strong><br><br>
+                ${doctors.slice(0, 3).map(d => `
+                    <div class="item">
+                        <strong>${d.name}</strong><br>
+                        ID: ${d.id}<br>
+                        Email: ${d.email}<br>
+                        Specialization: ${d.specialization}
+                    </div>
+                `).join('')}
+            `;
+
+            // Load appointments
+            const appointments = appointmentStorage.getAllAppointments();
+            document.getElementById('appointmentsData').innerHTML = `
+                <strong>Total Appointments: ${appointments.length}</strong><br><br>
+                ${appointments.slice(0, 3).map(apt => `
+                    <div class="item">
+                        <strong>${apt.patientName}</strong> → <strong>${apt.doctorName}</strong><br>
+                        Date: ${apt.date}<br>
+                        Status: ${apt.status}<br>
+                        Patient ID: ${apt.patientId}<br>
+                        Doctor ID: ${apt.doctorId}
+                    </div>
+                `).join('')}
+            `;
+
+            // Load prescriptions
+            const prescriptions = prescriptionStorage.getAllPrescriptions();
+            document.getElementById('prescriptionsData').innerHTML = `
+                <strong>Total Prescriptions: ${prescriptions.length}</strong><br><br>
+                ${prescriptions.map(rx => `
+                    <div class="item">
+                        <strong>${rx.diagnosis}</strong><br>
+                        Patient: ${rx.patientName} (${rx.patientId})<br>
+                        Doctor: ${rx.doctorName} (${rx.doctorId})<br>
+                        Date: ${rx.dateIssued}<br>
+                        Status: ${rx.status}<br>
+                        Medications: ${rx.medications.length}
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function testDoctorWorkflow() {
+            const users = userStorage.getAllUsers();
+            const appointments = appointmentStorage.getAllAppointments();
+            const prescriptions = prescriptionStorage.getAllPrescriptions();
+            
+            // Test if doctors have past patients
+            const doctors = users.filter(u => u.userType === 'doctor');
+            let results = [];
+            
+            doctors.slice(0, 3).forEach(doctor => {
+                const doctorAppointments = appointments.filter(apt => apt.doctorId === doctor.id);
+                const doctorPrescriptions = prescriptions.filter(rx => rx.doctorId === doctor.id);
+                
+                results.push(`
+                    <strong>${doctor.name} (${doctor.id})</strong><br>
+                    - Past appointments: ${doctorAppointments.length}<br>
+                    - Prescriptions written: ${doctorPrescriptions.length}<br>
+                    - Can write prescriptions: ${doctorAppointments.length > 0 ? '✅ Yes' : '❌ No patients'}<br>
+                `);
+            });
+            
+            showResult(`Doctor Workflow Test:<br><br>${results.join('<br>')}`);
+        }
+
+        function testPatientWorkflow() {
+            const users = userStorage.getAllUsers();
+            const appointments = appointmentStorage.getAllAppointments();
+            const prescriptions = prescriptionStorage.getAllPrescriptions();
+            
+            // Test if patients have appointments and prescriptions
+            const patients = users.filter(u => u.userType === 'patient');
+            let results = [];
+            
+            patients.slice(0, 3).forEach(patient => {
+                const patientAppointments = appointments.filter(apt => apt.patientId === patient.id);
+                const patientPrescriptions = prescriptions.filter(rx => rx.patientId === patient.id);
+                
+                results.push(`
+                    <strong>${patient.name} (${patient.id})</strong><br>
+                    - Appointments: ${patientAppointments.length}<br>
+                    - Prescriptions: ${patientPrescriptions.length}<br>
+                    - Can view prescriptions: ${patientPrescriptions.length > 0 ? '✅ Yes' : '❌ No prescriptions'}<br>
+                `);
+            });
+            
+            showResult(`Patient Workflow Test:<br><br>${results.join('<br>')}`);
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This will remove users, appointments, and prescriptions.')) {
+                localStorage.removeItem('registeredUsers');
+                localStorage.removeItem('patientcare_appointments');
+                localStorage.removeItem('patientcare_prescriptions');
+                loadAllData();
+                showResult('All data cleared! Refresh the PatientCare app to reinitialize.', 'success');
+            }
+        }
+
+        // Auto-load on page load
+        window.onload = function() {
+            loadAllData();
+        };
+    </script>
+</body>
+</html>

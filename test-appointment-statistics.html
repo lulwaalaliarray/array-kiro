@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Statistics Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .feature {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+        .feature:hover {
+            border-color: #0d9488;
+            background-color: #f0fdfa;
+        }
+        .feature h3 {
+            color: #111827;
+            margin: 0 0 8px 0;
+        }
+        .feature p {
+            color: #6b7280;
+            margin: 0 0 12px 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status.implemented {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .test-steps {
+            background-color: #f8fafc;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+        .test-steps ol, .test-steps ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .test-steps li {
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #374151;
+        }
+        h1 {
+            color: #111827;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+        .highlight {
+            background-color: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .stat-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0d9488;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Appointment Statistics & Counting</h1>
+    <p class="subtitle">Test the accurate counting of appointments and pending appointments across different user types</p>
+
+    <div class="container">
+        <h2>📊 Enhanced Appointment Statistics</h2>
+        
+        <div class="feature">
+            <h3>Accurate Appointment Counting <span class="status implemented">✅ IMPLEMENTED</span></h3>
+            <p>The system now correctly counts and displays appointment statistics for all user types with real sample data.</p>
+            <div class="test-steps">
+                <strong>Improvements Made:</strong>
+                <ul>
+                    <li>Added upcoming appointments (confirmed and pending) to sample data</li>
+                    <li>Added current month appointments for accurate monthly statistics</li>
+                    <li>Fixed dashboard to show statistics for doctors (previously only showed PastPatients)</li>
+                    <li>Enhanced prescription counting for doctors</li>
+                    <li>Improved user ID handling to prevent undefined errors</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="feature">
+            <h3>Sample Data Added</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Confirmed Upcoming</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Pending Appointments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">This Month Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Historical Completed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>👨‍⚕️ Doctor Dashboard Statistics</h2>
+        
+        <div class="feature">
+            <h3>Doctor-Specific Dashboard <span class="status implemented">✅ NEW FEATURE</span></h3>
+            <p>Doctors now see their own dashboard with appointment and prescription statistics instead of being redirected to PastPatients.</p>
+            <div class="test-steps">
+                <strong>Doctor Dashboard Shows:</strong>
+                <ul>
+                    <li><strong>This Month's Appointments:</strong> Completed appointments in current month</li>
+                    <li><strong>Upcoming Appointments:</strong> Confirmed and pending future appointments</li>
+                    <li><strong>Prescriptions Written:</strong> Prescriptions issued by the doctor this month</li>
+                    <li><strong>Recent Activity:</strong> Recent appointments and prescriptions</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="feature">
+            <h3>User Type Specific Statistics</h3>
+            <div class="test-steps">
+                <strong>Statistics by User Type:</strong>
+                <ul>
+                    <li><strong>Doctors:</strong> See their appointments, upcoming appointments, and prescriptions written</li>
+                    <li><strong>Patients:</strong> See their appointments and prescriptions received</li>
+                    <li><strong>Admins:</strong> See all system appointments and prescriptions</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🧪 Testing Instructions</h2>
+        
+        <div class="feature">
+            <h3>Complete Testing Flow</h3>
+            <div class="test-steps">
+                <strong>Test Steps:</strong>
+                <ol>
+                    <li><strong>Doctor Testing:</strong>
+                        <ul>
+                            <li>Log in as doctor (use <span class="highlight">doctor@patientcare.bh</span> / <span class="highlight">doctor123</span>)</li>
+                            <li>Check dashboard shows appointment statistics (not just PastPatients redirect)</li>
+                            <li>Verify "This Month's Activity" shows correct appointment count</li>
+                            <li>Verify "Upcoming Appointments" shows pending/confirmed appointments</li>
+                            <li>Check "Prescriptions Written" count</li>
+                            <li>Navigate to "My Appointments" to see upcoming appointments list</li>
+                        </ul>
+                    </li>
+                    <li><strong>Patient Testing:</strong>
+                        <ul>
+                            <li>Log in as patient (use <span class="highlight">patient@patientcare.bh</span> / <span class="highlight">patient123</span>)</li>
+                            <li>Check dashboard shows patient-specific statistics</li>
+                            <li>Verify appointment and prescription counts</li>
+                        </ul>
+                    </li>
+                    <li><strong>Admin Testing:</strong>
+                        <ul>
+                            <li>Log in as admin (use <span class="highlight">admin@patientcare.bh</span> / <span class="highlight">admin123</span>)</li>
+                            <li>Check dashboard shows system-wide statistics</li>
+                            <li>Verify total appointments and prescriptions counts</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="feature">
+            <h3>Expected Results</h3>
+            <div class="test-steps">
+                <strong>What You Should See:</strong>
+                <ul>
+                    <li><strong>Non-zero counts:</strong> All statistics should show actual numbers, not zeros</li>
+                    <li><strong>Upcoming appointments:</strong> Should show 4 total upcoming appointments (2 confirmed, 2 pending)</li>
+                    <li><strong>Monthly appointments:</strong> Should show appointments from current month</li>
+                    <li><strong>Recent activity:</strong> Should show recent appointments and prescriptions</li>
+                    <li><strong>User-specific data:</strong> Each user type sees relevant statistics</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📋 Sample Data Overview</h2>
+        
+        <div class="feature">
+            <h3>Upcoming Appointments Added</h3>
+            <div class="test-steps">
+                <strong>New Sample Appointments:</strong>
+                <ul>
+                    <li><strong>Tomorrow:</strong> Omar Al-Rashid with Dr. Ahmed Al-Mansouri (Confirmed)</li>
+                    <li><strong>Day After Tomorrow:</strong> Layla Al-Zahra with Dr. Fatima Al-Zahra (Confirmed)</li>
+                    <li><strong>3 Days From Now:</strong> Khalid Al-Mansoori with Dr. Ahmed Al-Mansouri (Pending)</li>
+                    <li><strong>4 Days From Now:</strong> Amina Al-Sabah with Dr. Mohammed Al-Khalifa (Pending)</li>
+                    <li><strong>Today:</strong> Hassan Al-Thani with Dr. Aisha Al-Mannai (Completed)</li>
+                    <li><strong>5 Days Ago:</strong> Noor Al-Khalifa with Dr. Hassan Al-Fadhel (Completed)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="feature">
+            <h3>Statistics Verification</h3>
+            <div class="test-steps">
+                <strong>Expected Counts:</strong>
+                <ul>
+                    <li><strong>Total Upcoming:</strong> 4 appointments (2 confirmed + 2 pending)</li>
+                    <li><strong>This Month Completed:</strong> 2 appointments (today + 5 days ago)</li>
+                    <li><strong>Historical:</strong> 8 previous appointments from past weeks/months</li>
+                    <li><strong>Total System:</strong> 14 appointments across all time periods</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="background-color: #f0fdf4; border: 2px solid #bbf7d0;">
+        <h2 style="color: #166534;">✅ Statistics Fixed</h2>
+        <p style="color: #166534; margin: 0;">
+            The appointment and prescription counting system now accurately reflects real data 
+            with proper upcoming appointments, monthly statistics, and user-specific dashboards. 
+            All user types (doctors, patients, admins) now see relevant and accurate statistics 
+            instead of zeros or missing data.
+        </p>
+    </div>
+</body>
+</html>

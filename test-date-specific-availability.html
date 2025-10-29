@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date-Specific Availability System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .info {
+            color: #0d9488;
+        }
+        .warning {
+            color: #f59e0b;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0d9488;
+        }
+        .calendar-demo {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+            max-width: 400px;
+        }
+        .day-header {
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+        .day-cell {
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .available-override {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .unavailable-override {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .available-weekly {
+            background: #f0f9ff;
+            color: #1e40af;
+        }
+        .unavailable-weekly {
+            background: #f9fafb;
+            color: #6b7280;
+        }
+        .legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        .code {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🗓️ Enhanced Date-Specific Availability System</h1>
+    
+    <div class="test-section">
+        <h2 class="success">✅ Date-Specific Availability Now Available!</h2>
+        
+        <p>The availability system has been completely enhanced to support date-specific overrides in addition to weekly patterns. Doctors can now:</p>
+        
+        <ul>
+            <li>✅ Set weekly availability patterns (as before)</li>
+            <li>✅ Override specific dates with custom availability</li>
+            <li>✅ Mark specific dates as unavailable (holidays, vacations)</li>
+            <li>✅ Set custom hours for specific dates</li>
+            <li>✅ Add reasons for unavailability</li>
+            <li>✅ Remove overrides to revert to weekly patterns</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔧 New Features Added</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>📅 Calendar Interface</h4>
+                <p>Visual calendar showing next 30 days with color-coded availability status</p>
+            </div>
+            
+            <div class="feature-card">
+                <h4>🎯 Date-Specific Overrides</h4>
+                <p>Override weekly patterns for specific dates with custom hours or unavailability</p>
+            </div>
+            
+            <div class="feature-card">
+                <h4>📝 Reason Tracking</h4>
+                <p>Add optional reasons for unavailability (holidays, conferences, etc.)</p>
+            </div>
+            
+            <div class="feature-card">
+                <h4>🔄 Easy Management</h4>
+                <p>Click dates to modify, remove overrides, or set custom hours</p>
+            </div>
+            
+            <div class="feature-card">
+                <h4>💾 Persistent Storage</h4>
+                <p>All date overrides are saved and persist across sessions</p>
+            </div>
+            
+            <div class="feature-card">
+                <h4>🎨 Visual Feedback</h4>
+                <p>Color-coded calendar with legend showing different availability states</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Calendar Interface Demo</h2>
+        
+        <p>The new calendar interface shows availability at a glance:</p>
+        
+        <div class="calendar-demo">
+            <div class="day-header">Sun</div>
+            <div class="day-header">Mon</div>
+            <div class="day-header">Tue</div>
+            <div class="day-header">Wed</div>
+            <div class="day-header">Thu</div>
+            <div class="day-header">Fri</div>
+            <div class="day-header">Sat</div>
+            
+            <div class="day-cell unavailable-weekly">1</div>
+            <div class="day-cell available-weekly">2</div>
+            <div class="day-cell available-weekly">3</div>
+            <div class="day-cell available-weekly">4</div>
+            <div class="day-cell available-weekly">5</div>
+            <div class="day-cell unavailable-weekly">6</div>
+            <div class="day-cell unavailable-weekly">7</div>
+            
+            <div class="day-cell unavailable-weekly">8</div>
+            <div class="day-cell available-weekly">9</div>
+            <div class="day-cell available-override">10<br><small>✓</small></div>
+            <div class="day-cell unavailable-override">11<br><small>✗</small></div>
+            <div class="day-cell available-weekly">12</div>
+            <div class="day-cell unavailable-weekly">13</div>
+            <div class="day-cell unavailable-weekly">14</div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color available-override"></div>
+                <span>Available (Override)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color unavailable-override"></div>
+                <span>Unavailable (Override)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color available-weekly"></div>
+                <span>Available (Weekly)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color unavailable-weekly"></div>
+                <span>Unavailable (Weekly)</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🛠️ Technical Implementation</h2>
+        
+        <h3>Enhanced Data Structure</h3>
+        <div class="code">
+interface DateSpecificAvailability {
+  date: string; // YYYY-MM-DD format
+  available: boolean;
+  startTime?: string;
+  endTime?: string;
+  reason?: string; // Optional reason for unavailability
+}
+
+interface DoctorAvailability {
+  doctorId: string;
+  availability: WeeklyAvailability;
+  dateOverrides: DateSpecificAvailability[]; // NEW!
+  updatedAt: string;
+}
+        </div>
+        
+        <h3>New Storage Methods</h3>
+        <div class="code">
+// Set date-specific availability
+setDateSpecificAvailability(doctorId, dateOverride)
+
+// Remove date-specific availability
+removeDateSpecificAvailability(doctorId, date)
+
+// Get date overrides
+getDateOverrides(doctorId)
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📋 How to Use</h2>
+        
+        <h3>For Doctors:</h3>
+        <ol>
+            <li><strong>Set Weekly Pattern:</strong> Configure your regular weekly schedule as before</li>
+            <li><strong>View Calendar:</strong> See the next 30 days with color-coded availability</li>
+            <li><strong>Click Dates:</strong> Click any date to see current status and options</li>
+            <li><strong>Add Overrides:</strong> 
+                <ul>
+                    <li>Click "Make Unavailable" to block a normally available day</li>
+                    <li>Click "Make Available" to open a normally closed day</li>
+                    <li>Click "Custom Hours" to set different hours for that date</li>
+                    <li>Use "+ Add Date Override" for advanced options</li>
+                </ul>
+            </li>
+            <li><strong>Remove Overrides:</strong> Click "Remove Override" to revert to weekly pattern</li>
+            <li><strong>Save Changes:</strong> Click "Save Availability" to persist all changes</li>
+        </ol>
+        
+        <h3>Common Use Cases:</h3>
+        <ul>
+            <li><strong>Holidays:</strong> Mark December 25th as unavailable with reason "Christmas Holiday"</li>
+            <li><strong>Conferences:</strong> Block multiple days for medical conferences</li>
+            <li><strong>Extended Hours:</strong> Set special hours for certain days (e.g., 7 AM - 9 PM)</li>
+            <li><strong>Weekend Availability:</strong> Open on a Saturday for special appointments</li>
+            <li><strong>Vacation:</strong> Block a week or more for personal time</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔄 Integration with Booking System</h2>
+        
+        <p>The booking system automatically respects date-specific overrides:</p>
+        
+        <ul>
+            <li>✅ Patients cannot book on dates marked unavailable</li>
+            <li>✅ Time slots reflect custom hours for specific dates</li>
+            <li>✅ Weekly patterns are used when no override exists</li>
+            <li>✅ Real-time validation prevents invalid bookings</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Priority System</h2>
+        
+        <p>The system uses a clear priority hierarchy:</p>
+        
+        <ol>
+            <li><strong>Date-Specific Override</strong> (Highest Priority)
+                <ul>
+                    <li>If a date has a specific override, use that</li>
+                    <li>Overrides can make unavailable days available or vice versa</li>
+                    <li>Custom hours override weekly hours</li>
+                </ul>
+            </li>
+            <li><strong>Weekly Pattern</strong> (Default)
+                <ul>
+                    <li>Used when no date-specific override exists</li>
+                    <li>Provides the baseline availability schedule</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="success">✅ Status: Fully Implemented</h2>
+        
+        <p>The enhanced availability system is now complete with:</p>
+        
+        <ul>
+            <li>✅ Date-specific availability overrides</li>
+            <li>✅ Visual calendar interface</li>
+            <li>✅ Easy date selection and modification</li>
+            <li>✅ Reason tracking for unavailability</li>
+            <li>✅ Custom hours for specific dates</li>
+            <li>✅ Override removal functionality</li>
+            <li>✅ Integration with booking system</li>
+            <li>✅ Persistent storage</li>
+            <li>✅ Color-coded visual feedback</li>
+            <li>✅ Responsive design</li>
+        </ul>
+        
+        <p class="info">Doctors now have complete control over their availability with both weekly patterns and date-specific customizations!</p>
+    </div>
+</body>
+</html>

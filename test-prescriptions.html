@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatientCare - Test Prescriptions</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 8px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #0f766e;
+        }
+        .success {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .prescription {
+            background: #f0fdf4;
+            border: 1px solid #dcfce7;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        .medication {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>PatientCare - Prescription System Test</h1>
+            <p>Test the prescription system functionality.</p>
+            
+            <div>
+                <button class="button" onclick="loadPrescriptions()">Load Prescriptions</button>
+                <button class="button" onclick="createSamplePrescription()">Create Sample Prescription</button>
+                <button class="button" onclick="clearPrescriptions()">Clear All Prescriptions</button>
+            </div>
+
+            <div id="results"></div>
+        </div>
+
+        <div class="card">
+            <h2>Current Prescriptions</h2>
+            <div id="prescriptionsList">
+                <p>Click "Load Prescriptions" to view prescriptions...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Prescription storage functions
+        const prescriptionStorage = {
+            getAllPrescriptions: () => {
+                try {
+                    const stored = localStorage.getItem('patientcare_prescriptions');
+                    return stored ? JSON.parse(stored) : [];
+                } catch (error) {
+                    console.error('Error loading prescriptions:', error);
+                    return [];
+                }
+            },
+
+            addPrescription: (prescription) => {
+                try {
+                    const prescriptions = prescriptionStorage.getAllPrescriptions();
+                    const newPrescription = {
+                        ...prescription,
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    prescriptions.push(newPrescription);
+                    localStorage.setItem('patientcare_prescriptions', JSON.stringify(prescriptions));
+                    return newPrescription;
+                } catch (error) {
+                    console.error('Error adding prescription:', error);
+                    return null;
+                }
+            },
+
+            clearAllPrescriptions: () => {
+                localStorage.removeItem('patientcare_prescriptions');
+            }
+        };
+
+        function showResult(message, type = 'success') {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function loadPrescriptions() {
+            const prescriptions = prescriptionStorage.getAllPrescriptions();
+            const listDiv = document.getElementById('prescriptionsList');
+            
+            if (prescriptions.length === 0) {
+                listDiv.innerHTML = '<p>No prescriptions found.</p>';
+                showResult('No prescriptions in the system.', 'info');
+                return;
+            }
+
+            listDiv.innerHTML = prescriptions.map(prescription => `
+                <div class="prescription">
+                    <h3>${prescription.diagnosis}</h3>
+                    <p><strong>Doctor:</strong> ${prescription.doctorName}</p>
+                    <p><strong>Patient:</strong> ${prescription.patientName}</p>
+                    <p><strong>Date:</strong> ${prescription.dateIssued}</p>
+                    <p><strong>Status:</strong> ${prescription.status}</p>
+                    
+                    <h4>Medications:</h4>
+                    ${prescription.medications.map(med => `
+                        <div class="medication">
+                            <strong>${med.name}</strong> - ${med.dosage}<br>
+                            <small>Frequency: ${med.frequency} | Duration: ${med.duration}</small><br>
+                            ${med.instructions ? `<em>Instructions: ${med.instructions}</em>` : ''}
+                        </div>
+                    `).join('')}
+                    
+                    ${prescription.notes ? `<p><strong>Notes:</strong> ${prescription.notes}</p>` : ''}
+                </div>
+            `).join('');
+            
+            showResult(`Loaded ${prescriptions.length} prescriptions.`);
+        }
+
+        function createSamplePrescription() {
+            const samplePrescription = {
+                patientId: 'patient-001',
+                patientName: 'Sarah Al-Khalifa',
+                patientEmail: 'patient@patientcare.bh',
+                doctorId: 'doctor-001',
+                doctorName: 'Dr. Ahmed Al-Mansouri',
+                medications: [
+                    {
+                        name: 'Test Medication',
+                        dosage: '100mg',
+                        frequency: '2 times daily',
+                        duration: '5 days',
+                        instructions: 'Take with food'
+                    }
+                ],
+                diagnosis: 'Test Diagnosis',
+                notes: 'This is a test prescription created from the test page.',
+                dateIssued: new Date().toISOString().split('T')[0],
+                status: 'active'
+            };
+
+            const newPrescription = prescriptionStorage.addPrescription(samplePrescription);
+            
+            if (newPrescription) {
+                showResult(`✅ Sample prescription created! ID: ${newPrescription.id}`);
+                setTimeout(loadPrescriptions, 500);
+            } else {
+                showResult('❌ Failed to create sample prescription.', 'error');
+            }
+        }
+
+        function clearPrescriptions() {
+            if (confirm('Are you sure you want to delete all prescriptions?')) {
+                prescriptionStorage.clearAllPrescriptions();
+                loadPrescriptions();
+                showResult('All prescriptions cleared!');
+            }
+        }
+
+        // Auto-load on page load
+        window.onload = function() {
+            loadPrescriptions();
+        };
+    </script>
+</body>
+</html>

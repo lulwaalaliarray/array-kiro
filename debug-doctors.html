@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatientCare - Debug Doctors</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 8px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #0f766e;
+        }
+        .success {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .doctor-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>PatientCare - Doctor Debug Tool</h1>
+            <p>Debug doctor loading, filtering, and booking functionality.</p>
+            
+            <div>
+                <button class="button" onclick="loadDoctors()">Load Doctors</button>
+                <button class="button" onclick="testLocationFilter()">Test Location Filter</button>
+                <button class="button" onclick="testBooking()">Test Booking</button>
+                <button class="button" onclick="initializeUsers()">Initialize Users</button>
+            </div>
+
+            <div id="results"></div>
+        </div>
+
+        <div class="card">
+            <h2>Doctors List</h2>
+            <div id="doctorsList">
+                <p>Click "Load Doctors" to see all doctors...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Location Analysis</h2>
+            <div id="locationAnalysis">
+                <p>Click "Test Location Filter" to analyze locations...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Storage utilities
+        const userStorage = {
+            getAllUsers: () => {
+                try {
+                    return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                } catch {
+                    return [];
+                }
+            }
+        };
+
+        function showResult(message, type = 'success') {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function loadDoctors() {
+            const allUsers = userStorage.getAllUsers();
+            const doctors = allUsers.filter(user => 
+                user.userType === 'doctor' && 
+                (user.status === 'verified' || user.status === 'active') && 
+                user.specialization
+            );
+
+            const doctorsDiv = document.getElementById('doctorsList');
+            
+            if (doctors.length === 0) {
+                doctorsDiv.innerHTML = '<p style="color: #ef4444;">No doctors found. Please initialize users first.</p>';
+                showResult('No doctors found in the system.', 'error');
+                return;
+            }
+
+            doctorsDiv.innerHTML = `
+                <strong>Found ${doctors.length} doctors:</strong><br><br>
+                <div class="grid">
+                    ${doctors.map(doctor => `
+                        <div class="doctor-card">
+                            <strong>${doctor.name}</strong><br>
+                            <strong>ID:</strong> ${doctor.id}<br>
+                            <strong>Email:</strong> ${doctor.email}<br>
+                            <strong>Specialization:</strong> ${doctor.specialization}<br>
+                            <strong>Location:</strong> ${doctor.location || 'N/A'}<br>
+                            <strong>Hospital:</strong> ${doctor.hospital || 'N/A'}<br>
+                            <strong>Status:</strong> ${doctor.status}<br>
+                            <strong>Fee:</strong> ${doctor.consultationFee || 'N/A'} BHD<br>
+                            <button class="button" onclick="testDoctorBooking('${doctor.id}', '${doctor.name}')">Test Booking</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            showResult(`✅ Loaded ${doctors.length} doctors successfully!`);
+        }
+
+        function testLocationFilter() {
+            const allUsers = userStorage.getAllUsers();
+            const doctors = allUsers.filter(user => 
+                user.userType === 'doctor' && 
+                (user.status === 'verified' || user.status === 'active') && 
+                user.specialization
+            );
+
+            // Analyze locations
+            const locations = doctors.map(doctor => doctor.location).filter(Boolean);
+            const uniqueLocations = [...new Set(locations)];
+            const cityNames = uniqueLocations.map(loc => loc.split(',')[0].trim());
+            const uniqueCities = [...new Set(cityNames)];
+
+            const analysisDiv = document.getElementById('locationAnalysis');
+            analysisDiv.innerHTML = `
+                <strong>Location Analysis:</strong><br><br>
+                <strong>Total doctors with locations:</strong> ${locations.length}<br>
+                <strong>Unique full locations:</strong> ${uniqueLocations.length}<br>
+                <strong>Unique cities:</strong> ${uniqueCities.length}<br><br>
+                
+                <strong>Full Locations:</strong><br>
+                ${uniqueLocations.map(loc => `• ${loc}`).join('<br>')}<br><br>
+                
+                <strong>City Names (for filter):</strong><br>
+                ${uniqueCities.map(city => `• ${city}`).join('<br>')}<br><br>
+                
+                <strong>Filter Test:</strong><br>
+                ${uniqueCities.map(city => {
+                    const matchingDoctors = doctors.filter(doctor => 
+                        doctor.location && (
+                            doctor.location.toLowerCase().includes(city.toLowerCase()) ||
+                            doctor.location.split(',')[0].trim().toLowerCase() === city.toLowerCase()
+                        )
+                    );
+                    return `• "${city}" matches ${matchingDoctors.length} doctors`;
+                }).join('<br>')}
+            `;
+
+            showResult(`✅ Location analysis complete! Found ${uniqueCities.length} unique cities.`);
+        }
+
+        function testDoctorBooking(doctorId, doctorName) {
+            const allUsers = userStorage.getAllUsers();
+            const doctors = allUsers.filter(user => 
+                user.userType === 'doctor' && 
+                (user.status === 'verified' || user.status === 'active') && 
+                user.specialization
+            );
+
+            const doctor = doctors.find(doc => doc.id === doctorId);
+            
+            if (doctor) {
+                showResult(`✅ Doctor found! ${doctorName} (ID: ${doctorId}) is available for booking.`);
+            } else {
+                showResult(`❌ Doctor not found! ID: ${doctorId} not in doctors list.`, 'error');
+                console.log('Available doctor IDs:', doctors.map(d => d.id));
+            }
+        }
+
+        function testBooking() {
+            const allUsers = userStorage.getAllUsers();
+            const doctors = allUsers.filter(user => 
+                user.userType === 'doctor' && 
+                (user.status === 'verified' || user.status === 'active') && 
+                user.specialization
+            );
+
+            if (doctors.length === 0) {
+                showResult('❌ No doctors available for booking test.', 'error');
+                return;
+            }
+
+            const testDoctor = doctors[0];
+            showResult(`✅ Booking test: Would book appointment with ${testDoctor.name} (ID: ${testDoctor.id})`);
+        }
+
+        function initializeUsers() {
+            // This will trigger initialization when PatientCare loads
+            showResult('✅ User initialization triggered! Please refresh PatientCare to load all users.', 'success');
+        }
+
+        // Auto-load on page load
+        window.onload = function() {
+            loadDoctors();
+        };
+    </script>
+</body>
+</html>

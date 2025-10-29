@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Patient Records - PatientCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { background: #d1fae5; color: #065f46; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .info { background: #dbeafe; color: #1e40af; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .feature { background: #f0fdfa; color: #0d9488; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        
+        .patient-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 16px 0;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .patient-card:hover {
+            border-color: #0d9488;
+            background: #f0fdfa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(13, 148, 136, 0.1);
+        }
+        
+        .patient-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .patient-avatar {
+            width: 64px;
+            height: 64px;
+            background: #f8fafc;
+            border: 3px solid #0d9488;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .diagnosis-box {
+            padding: 16px;
+            background: #f0fdfa;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>📋 Enhanced Patient Records</h1>
+    
+    <div class="test-section">
+        <h2>✨ Comprehensive Patient Information</h2>
+        <div class="success">
+            ✅ Patient Records now display comprehensive information including phone numbers, height, weight, photo icons, and summary diagnoses
+        </div>
+        
+        <h3>New Fields Added:</h3>
+        <ul>
+            <li><strong>Phone Number:</strong> Contact information for patients</li>
+            <li><strong>Height & Weight:</strong> Physical measurements in cm and kg</li>
+            <li><strong>Photo Icon:</strong> Professional emoji representing the patient</li>
+            <li><strong>Summary Diagnosis:</strong> Primary medical condition summary</li>
+            <li><strong>Enhanced Display:</strong> Better organized card layout</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🎨 Sample Enhanced Patient Record</h2>
+        <p>Example of the new comprehensive patient record card:</p>
+        
+        <div class="patient-card">
+            <div class="patient-header">
+                <div class="patient-avatar">👩🏻‍⚕️</div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: #111827; margin: 0 0 4px 0;">Sarah Al-Khalifa</h3>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #6b7280; margin-bottom: 4px;">
+                        <span><strong>CPR:</strong> 850312-1234</span>
+                        <span>•</span>
+                        <span>39 years</span>
+                        <span>•</span>
+                        <span>♀ female</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #6b7280;">
+                        <span>📧 patient@patientcare.bh</span>
+                        <span>•</span>
+                        <span>📞 +973-3456-7890</span>
+                    </div>
+                    <div style="font-size: 12px; color: #0d9488; font-weight: 500; margin-top: 4px;">
+                        Hypertension with High Cholesterol
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 24px; font-weight: 700; color: #0d9488;">12</div>
+                    <div style="font-size: 12px; color: #6b7280; font-weight: 500;">Total Visits</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: #374151; margin: 0 0 8px 0;">Medical Conditions</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <span style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #ef444415; border: 1px solid #ef444430; border-radius: 20px; font-size: 12px; font-weight: 500; color: #ef4444;">
+                        🫀 Hypertension
+                        <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%;"></span>
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #eab30815; border: 1px solid #eab30830; border-radius: 20px; font-size: 12px; font-weight: 500; color: #eab308;">
+                        🧪 High Cholesterol
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #10b98115; border: 1px solid #10b98130; border-radius: 20px; font-size: 12px; font-weight: 500; color: #10b981;">
+                        🤧 Allergic Rhinitis
+                    </span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #0d9488;">12</div>
+                    <div style="font-size: 10px; color: #6b7280; font-weight: 500;">Visits</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #0d9488;">A+</div>
+                    <div style="font-size: 10px; color: #6b7280; font-weight: 500;">Blood</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #0d9488;">165cm</div>
+                    <div style="font-size: 10px; color: #6b7280; font-weight: 500;">Height</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #0d9488;">62kg</div>
+                    <div style="font-size: 10px; color: #6b7280; font-weight: 500;">Weight</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #0d9488;">8</div>
+                    <div style="font-size: 10px; color: #6b7280; font-weight: 500;">Rx</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Technical Implementation</h2>
+        
+        <h3>Enhanced Data Structure:</h3>
+        <div style="background: #f8fafc; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 13px;">
+interface PatientRecord {<br>
+&nbsp;&nbsp;// Existing fields...<br>
+&nbsp;&nbsp;<strong>phoneNumber: string;</strong><br>
+&nbsp;&nbsp;<strong>height: string; // in cm</strong><br>
+&nbsp;&nbsp;<strong>weight: string; // in kg</strong><br>
+&nbsp;&nbsp;<strong>photoIcon: string; // emoji icon</strong><br>
+&nbsp;&nbsp;<strong>summaryDiagnosis: string; // primary diagnosis</strong><br>
+&nbsp;&nbsp;// ... other fields<br>
+}
+        </div>
+
+        <h3>Sample Patient Data:</h3>
+        <div class="feature">
+            <strong>📞 Phone Numbers:</strong> Bahraini format (+973-XXXX-XXXX)<br>
+            <strong>📏 Physical Measurements:</strong> Height (150-180cm), Weight (50-90kg)<br>
+            <strong>👤 Photo Icons:</strong> Professional emojis (👩🏻‍⚕️, 👨🏻‍💼, 👩🏻‍🎓, etc.)<br>
+            <strong>🏥 Summary Diagnoses:</strong> Primary medical conditions overview
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Enhanced Patient Details Panel</h2>
+        <p>When clicking on a patient card, the detailed panel now shows:</p>
+        
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <h4 style="font-size: 14px; font-weight: 600; color: #374151; margin: 0 0 8px 0;">Personal Information</h4>
+                    <div style="font-size: 13px; color: #6b7280;">
+                        <div><strong>CPR:</strong> 850312-1234</div>
+                        <div><strong>Email:</strong> patient@patientcare.bh</div>
+                        <div><strong>Phone:</strong> +973-3456-7890</div>
+                        <div><strong>Age:</strong> 39 years</div>
+                        <div><strong>Gender:</strong> ♀ Female</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="font-size: 14px; font-weight: 600; color: #374151; margin: 0 0 8px 0;">Medical Information</h4>
+                    <div style="font-size: 13px; color: #6b7280;">
+                        <div><strong>Blood Type:</strong> A+</div>
+                        <div><strong>Height:</strong> 165 cm</div>
+                        <div><strong>Weight:</strong> 62 kg</div>
+                        <div><strong>Total Visits:</strong> 12</div>
+                        <div><strong>Allergies:</strong> Penicillin, Shellfish</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="diagnosis-box">
+                <h4 style="font-size: 14px; font-weight: 600; color: #065f46; margin: 0 0 8px 0;">Summary Diagnosis</h4>
+                <p style="font-size: 14px; color: #047857; margin: 0; font-weight: 500;">Hypertension with High Cholesterol</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Professional Photo Icons</h2>
+        <p>Each patient gets a professional emoji icon based on their profile:</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+            <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">👩🏻‍⚕️</div>
+                <div style="font-size: 12px; color: #6b7280;">Healthcare Professional</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">👨🏻‍💼</div>
+                <div style="font-size: 12px; color: #6b7280;">Business Professional</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">👩🏻‍🎓</div>
+                <div style="font-size: 12px; color: #6b7280;">Academic</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">👨🏻‍💻</div>
+                <div style="font-size: 12px; color: #6b7280;">Technology</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">👩🏻‍🎨</div>
+                <div style="font-size: 12px; color: #6b7280;">Creative</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">👨🏻‍🏭</div>
+                <div style="font-size: 12px; color: #6b7280;">Industrial</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 How to Test</h2>
+        <div class="info">
+            <ol>
+                <li>Login as a doctor or admin</li>
+                <li>Navigate to "Patient Records" (separate from Past Patients)</li>
+                <li>View the enhanced patient cards with:</li>
+                <ul>
+                    <li>Professional photo icons instead of initials</li>
+                    <li>Phone numbers and contact information</li>
+                    <li>Height and weight in the stats grid</li>
+                    <li>Summary diagnosis below contact info</li>
+                    <li>5-column stats grid with physical measurements</li>
+                </ul>
+                <li>Click on a patient card to view detailed information</li>
+                <li>Check the enhanced patient details panel with all new fields</li>
+                <li>Verify the summary diagnosis section</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Benefits</h2>
+        <ul>
+            <li><strong>Complete Patient Profile:</strong> All essential information in one view</li>
+            <li><strong>Professional Appearance:</strong> Photo icons instead of generic initials</li>
+            <li><strong>Better Contact Management:</strong> Phone numbers readily available</li>
+            <li><strong>Physical Health Tracking:</strong> Height and weight for medical assessments</li>
+            <li><strong>Quick Diagnosis Reference:</strong> Summary diagnosis prominently displayed</li>
+            <li><strong>Enhanced Organization:</strong> Better structured information layout</li>
+        </ul>
+    </div>
+
+    <div class="success">
+        <h3>🎉 Status: ENHANCED</h3>
+        <p>Patient Records now display comprehensive patient information including phone numbers, height, weight, professional photo icons, and summary diagnoses. The enhanced card layout provides healthcare professionals with all essential patient information at a glance, improving workflow efficiency and patient care quality.</p>
+    </div>
+</body>
+</html>

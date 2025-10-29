@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatientCare - Test Users</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        .user-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .user-email {
+            color: #0d9488;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .user-details {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .test-button {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 8px;
+        }
+        .test-button:hover {
+            background: #0f766e;
+        }
+        .success {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .error {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PatientCare - User Database Test</h1>
+            <p>Testing 30 users (15 patients + 15 doctors) with valid login credentials</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="patientCount">0</div>
+                <div class="stat-label">Patients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="doctorCount">0</div>
+                <div class="stat-label">Doctors</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Test Functions</h2>
+            <button class="test-button" onclick="initializeUsers()">Initialize Users</button>
+            <button class="test-button" onclick="loadUsers()">Load Users</button>
+            <button class="test-button" onclick="testLogin()">Test Login</button>
+            <button class="test-button" onclick="clearUsers()">Clear All Users</button>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="section">
+            <h2>Patient Users (15)</h2>
+            <div class="user-grid" id="patientUsers"></div>
+        </div>
+
+        <div class="section">
+            <h2>Doctor Users (15)</h2>
+            <div class="user-grid" id="doctorUsers"></div>
+        </div>
+    </div>
+
+    <script>
+        // User storage utility functions
+        const userStorage = {
+            getAllUsers: () => {
+                try {
+                    return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                } catch {
+                    return [];
+                }
+            },
+            
+            addUser: (user) => {
+                try {
+                    const users = userStorage.getAllUsers();
+                    if (users.some(existingUser => existingUser.email === user.email)) {
+                        return false;
+                    }
+                    users.push(user);
+                    localStorage.setItem('registeredUsers', JSON.stringify(users));
+                    return true;
+                } catch {
+                    return false;
+                }
+            },
+            
+            findUser: (email, password, userType) => {
+                try {
+                    const users = userStorage.getAllUsers();
+                    return users.find(user => 
+                        user.email === email && 
+                        user.password === password &&
+                        (!userType || user.userType === userType)
+                    ) || null;
+                } catch {
+                    return null;
+                }
+            },
+            
+            clearAllUsers: () => {
+                localStorage.removeItem('registeredUsers');
+            },
+            
+            getUserCount: () => {
+                try {
+                    const users = userStorage.getAllUsers();
+                    const patients = users.filter(user => user.userType === 'patient').length;
+                    const doctors = users.filter(user => user.userType === 'doctor').length;
+                    return { patients, doctors, total: users.length };
+                } catch {
+                    return { patients: 0, doctors: 0, total: 0 };
+                }
+            }
+        };
+
+        // Initialize demo users function (simplified version)
+        function initializeDemoUsers() {
+            const demoUsers = [
+                // 15 Patient Users
+                {
+                    id: 'patient-001',
+                    name: 'Sarah Al-Khalifa',
+                    email: 'patient@patientcare.bh',
+                    password: 'password',
+                    userType: 'patient',
+                    cpr: '123456789',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-1234-5678',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'patient-002',
+                    name: 'Ahmed Al-Mahmood',
+                    email: 'ahmed.mahmood@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '234567890',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-2345-6789',
+                    location: 'Riffa, Bahrain'
+                },
+                {
+                    id: 'patient-003',
+                    name: 'Fatema Al-Zahra',
+                    email: 'fatema.zahra@outlook.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '345678901',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-3456-7890',
+                    location: 'Muharraq, Bahrain'
+                },
+                {
+                    id: 'patient-004',
+                    name: 'Mohammed Al-Rashid',
+                    email: 'mohammed.rashid@yahoo.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '456789012',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-4567-8901',
+                    location: 'Hamad Town, Bahrain'
+                },
+                {
+                    id: 'patient-005',
+                    name: 'Maryam Al-Sabah',
+                    email: 'maryam.sabah@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '567890123',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-5678-9012',
+                    location: 'Isa Town, Bahrain'
+                },
+                {
+                    id: 'patient-006',
+                    name: 'Ali Al-Thani',
+                    email: 'ali.thani@hotmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '678901234',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-6789-0123',
+                    location: 'Sitra, Bahrain'
+                },
+                {
+                    id: 'patient-007',
+                    name: 'Noora Al-Khalil',
+                    email: 'noora.khalil@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '789012345',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-7890-1234',
+                    location: 'Budaiya, Bahrain'
+                },
+                {
+                    id: 'patient-008',
+                    name: 'Hassan Al-Fadhel',
+                    email: 'hassan.fadhel@outlook.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '890123456',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-8901-2345',
+                    location: 'Jidhafs, Bahrain'
+                },
+                {
+                    id: 'patient-009',
+                    name: 'Zahra Al-Mutawa',
+                    email: 'zahra.mutawa@yahoo.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '901234567',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-9012-3456',
+                    location: 'Tubli, Bahrain'
+                },
+                {
+                    id: 'patient-010',
+                    name: 'Omar Al-Dosari',
+                    email: 'omar.dosari@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '012345678',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-0123-4567',
+                    location: 'Seef, Bahrain'
+                },
+                {
+                    id: 'patient-011',
+                    name: 'Aisha Al-Mannai',
+                    email: 'aisha.mannai@hotmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '123450987',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-1234-0987',
+                    location: 'Adliya, Bahrain'
+                },
+                {
+                    id: 'patient-012',
+                    name: 'Khalid Al-Ansari',
+                    email: 'khalid.ansari@outlook.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '234509876',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-2345-0987',
+                    location: 'Zinj, Bahrain'
+                },
+                {
+                    id: 'patient-013',
+                    name: 'Latifa Al-Zayani',
+                    email: 'latifa.zayani@gmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '345098765',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-3450-9876',
+                    location: 'Sanabis, Bahrain'
+                },
+                {
+                    id: 'patient-014',
+                    name: 'Yusuf Al-Hawaj',
+                    email: 'yusuf.hawaj@yahoo.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '450987654',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-4509-8765',
+                    location: 'Gudaibiya, Bahrain'
+                },
+                {
+                    id: 'patient-015',
+                    name: 'Huda Al-Baharna',
+                    email: 'huda.baharna@hotmail.com',
+                    password: 'patient123',
+                    userType: 'patient',
+                    cpr: '509876543',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    phone: '+973-5098-7654',
+                    location: 'Juffair, Bahrain'
+                },
+
+                // 15 Doctor Users
+                {
+                    id: 'doctor-001',
+                    name: 'Dr. Ahmed Al-Mansouri',
+                    email: 'doctor@patientcare.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '987654321',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Cardiology',
+                    consultationFee: 50,
+                    experience: '15 years',
+                    qualifications: 'MD, FACC, Board Certified Cardiologist',
+                    rating: 4.8,
+                    reviewCount: 127,
+                    totalReviews: 127,
+                    bio: 'Experienced cardiologist specializing in heart disease prevention and treatment.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1001',
+                    hospital: 'Bahrain Specialist Hospital',
+                    location: 'Juffair, Bahrain'
+                },
+                {
+                    id: 'doctor-002',
+                    name: 'Dr. Fatima Al-Zahra',
+                    email: 'fatima.zahra@bmc.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '876543210',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Pediatrics',
+                    consultationFee: 40,
+                    experience: '12 years',
+                    qualifications: 'MD, FAAP, Pediatric Specialist',
+                    rating: 4.9,
+                    reviewCount: 89,
+                    totalReviews: 89,
+                    bio: 'Dedicated pediatrician with expertise in child healthcare and development.',
+                    languages: ['Arabic', 'English', 'French'],
+                    phone: '+973-1700-1002',
+                    hospital: 'Bahrain Medical Center',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'doctor-003',
+                    name: 'Dr. Mohammed Al-Khalifa',
+                    email: 'mohammed.khalifa@kims.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '765432109',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Orthopedics',
+                    consultationFee: 60,
+                    experience: '18 years',
+                    qualifications: 'MD, MS Orthopedics, Fellowship in Sports Medicine',
+                    rating: 4.7,
+                    reviewCount: 156,
+                    totalReviews: 156,
+                    bio: 'Orthopedic surgeon specializing in joint replacement and sports injuries.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1003',
+                    hospital: 'King Hamad University Hospital',
+                    location: 'Busaiteen, Bahrain'
+                },
+                {
+                    id: 'doctor-004',
+                    name: 'Dr. Aisha Al-Mannai',
+                    email: 'aisha.mannai@awali.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '654321098',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Dermatology',
+                    consultationFee: 45,
+                    experience: '10 years',
+                    qualifications: 'MD, Dermatology Specialist, Aesthetic Medicine Certificate',
+                    rating: 4.6,
+                    reviewCount: 73,
+                    totalReviews: 73,
+                    bio: 'Dermatologist specializing in skin conditions and aesthetic treatments.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1004',
+                    hospital: 'Awali Hospital',
+                    location: 'Awali, Bahrain'
+                },
+                {
+                    id: 'doctor-005',
+                    name: 'Dr. Hassan Al-Fadhel',
+                    email: 'hassan.fadhel@smcbh.com',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '543210987',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Neurology',
+                    consultationFee: 70,
+                    experience: '20 years',
+                    qualifications: 'MD, DM Neurology, Fellowship in Epilepsy',
+                    rating: 4.9,
+                    reviewCount: 94,
+                    totalReviews: 94,
+                    bio: 'Neurologist with expertise in treating neurological disorders and epilepsy.',
+                    languages: ['Arabic', 'English', 'German'],
+                    phone: '+973-1700-1005',
+                    hospital: 'Salmaniya Medical Complex',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'doctor-006',
+                    name: 'Dr. Noora Al-Khalil',
+                    email: 'noora.khalil@ibnalnafees.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '432109876',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Gynecology',
+                    consultationFee: 55,
+                    experience: '14 years',
+                    qualifications: 'MD, MS Gynecology, FRCOG',
+                    rating: 4.8,
+                    reviewCount: 112,
+                    totalReviews: 112,
+                    bio: 'Gynecologist and obstetrician providing comprehensive women\'s healthcare.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1006',
+                    hospital: 'Ibn Al-Nafees Hospital',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'doctor-007',
+                    name: 'Dr. Ali Al-Thani',
+                    email: 'ali.thani@royalbh.com',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '321098765',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Psychiatry',
+                    consultationFee: 65,
+                    experience: '16 years',
+                    qualifications: 'MD, DPM, Fellowship in Child Psychiatry',
+                    rating: 4.7,
+                    reviewCount: 68,
+                    totalReviews: 68,
+                    bio: 'Psychiatrist specializing in mental health and behavioral disorders.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1007',
+                    hospital: 'Royal Bahrain Hospital',
+                    location: 'Riffa, Bahrain'
+                },
+                {
+                    id: 'doctor-008',
+                    name: 'Dr. Zahra Al-Mutawa',
+                    email: 'zahra.mutawa@americanmission.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '210987654',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Ophthalmology',
+                    consultationFee: 75,
+                    experience: '22 years',
+                    qualifications: 'MD, MS Ophthalmology, Fellowship in Vitreoretinal Surgery',
+                    rating: 4.9,
+                    reviewCount: 145,
+                    totalReviews: 145,
+                    bio: 'Ophthalmologist specializing in retinal diseases and eye surgery.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1008',
+                    hospital: 'American Mission Hospital',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'doctor-009',
+                    name: 'Dr. Omar Al-Dosari',
+                    email: 'omar.dosari@noor.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '109876543',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Urology',
+                    consultationFee: 60,
+                    experience: '13 years',
+                    qualifications: 'MD, MS Urology, Fellowship in Endourology',
+                    rating: 4.6,
+                    reviewCount: 87,
+                    totalReviews: 87,
+                    bio: 'Urologist specializing in kidney stones and minimally invasive procedures.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1009',
+                    hospital: 'Noor Specialist Hospital',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'doctor-010',
+                    name: 'Dr. Khalid Al-Ansari',
+                    email: 'khalid.ansari@gulf.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '098765432',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'ENT',
+                    consultationFee: 50,
+                    experience: '11 years',
+                    qualifications: 'MD, MS ENT, Fellowship in Head and Neck Surgery',
+                    rating: 4.5,
+                    reviewCount: 76,
+                    totalReviews: 76,
+                    bio: 'ENT specialist focusing on ear, nose, throat, and head & neck conditions.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1010',
+                    hospital: 'Gulf Dental & Medical Center',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'doctor-011',
+                    name: 'Dr. Latifa Al-Zayani',
+                    email: 'latifa.zayani@joslin.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '987654320',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Endocrinology',
+                    consultationFee: 65,
+                    experience: '17 years',
+                    qualifications: 'MD, DM Endocrinology, Diabetes Specialist',
+                    rating: 4.8,
+                    reviewCount: 103,
+                    totalReviews: 103,
+                    bio: 'Endocrinologist specializing in diabetes management and hormonal disorders.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1011',
+                    hospital: 'Joslin Diabetes Center',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'doctor-012',
+                    name: 'Dr. Yusuf Al-Hawaj',
+                    email: 'yusuf.hawaj@alkindy.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '876543209',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Gastroenterology',
+                    consultationFee: 70,
+                    experience: '19 years',
+                    qualifications: 'MD, DM Gastroenterology, Fellowship in Hepatology',
+                    rating: 4.7,
+                    reviewCount: 91,
+                    totalReviews: 91,
+                    bio: 'Gastroenterologist specializing in digestive system and liver diseases.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1012',
+                    hospital: 'Al-Kindy Medical Center',
+                    location: 'Riffa, Bahrain'
+                },
+                {
+                    id: 'doctor-013',
+                    name: 'Dr. Huda Al-Baharna',
+                    email: 'huda.baharna@alahli.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '765432108',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Rheumatology',
+                    consultationFee: 55,
+                    experience: '14 years',
+                    qualifications: 'MD, DM Rheumatology, Arthritis Specialist',
+                    rating: 4.6,
+                    reviewCount: 82,
+                    totalReviews: 82,
+                    bio: 'Rheumatologist specializing in arthritis and autoimmune diseases.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1013',
+                    hospital: 'Al-Ahli Hospital',
+                    location: 'Manama, Bahrain'
+                },
+                {
+                    id: 'doctor-014',
+                    name: 'Dr. Abdulla Al-Mahmeed',
+                    email: 'abdulla.mahmeed@alfarabi.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '654321087',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Pulmonology',
+                    consultationFee: 60,
+                    experience: '16 years',
+                    qualifications: 'MD, DM Pulmonology, Sleep Medicine Certificate',
+                    rating: 4.8,
+                    reviewCount: 95,
+                    totalReviews: 95,
+                    bio: 'Pulmonologist specializing in respiratory diseases and sleep disorders.',
+                    languages: ['Arabic', 'English'],
+                    phone: '+973-1700-1014',
+                    hospital: 'Al-Farabi Medical Center',
+                    location: 'Sitra, Bahrain'
+                },
+                {
+                    id: 'doctor-015',
+                    name: 'Dr. Mariam Al-Qassemi',
+                    email: 'mariam.qassemi@almoayyed.bh',
+                    password: 'doctor123',
+                    userType: 'doctor',
+                    cpr: '543210986',
+                    status: 'verified',
+                    createdAt: new Date().toISOString(),
+                    specialization: 'Oncology',
+                    consultationFee: 80,
+                    experience: '21 years',
+                    qualifications: 'MD, DM Oncology, Fellowship in Hematology',
+                    rating: 4.9,
+                    reviewCount: 134,
+                    totalReviews: 134,
+                    bio: 'Oncologist specializing in cancer treatment and blood disorders.',
+                    languages: ['Arabic', 'English', 'French'],
+                    phone: '+973-1700-1015',
+                    hospital: 'Al-Moayyed Medical Center',
+                    location: 'Seef, Bahrain'
+                }
+            ];
+
+            // Only add demo users if no users exist
+            const existingUsers = userStorage.getAllUsers();
+            if (existingUsers.length === 0) {
+                demoUsers.forEach(user => userStorage.addUser(user));
+            }
+        }
+
+        function initializeUsers() {
+            initializeDemoUsers();
+            loadUsers();
+            showResult('Users initialized successfully!', 'success');
+        }
+
+        function loadUsers() {
+            const users = userStorage.getAllUsers();
+            const stats = userStorage.getUserCount();
+            
+            // Update stats
+            document.getElementById('totalUsers').textContent = stats.total;
+            document.getElementById('patientCount').textContent = stats.patients;
+            document.getElementById('doctorCount').textContent = stats.doctors;
+            
+            // Display patients
+            const patientUsers = users.filter(user => user.userType === 'patient');
+            const patientContainer = document.getElementById('patientUsers');
+            patientContainer.innerHTML = patientUsers.map(user => `
+                <div class="user-card">
+                    <div class="user-name">${user.name}</div>
+                    <div class="user-email">${user.email}</div>
+                    <div class="user-details">
+                        Password: ${user.password}<br>
+                        Phone: ${user.phone || 'N/A'}<br>
+                        Location: ${user.location || 'N/A'}
+                    </div>
+                </div>
+            `).join('');
+            
+            // Display doctors
+            const doctorUsers = users.filter(user => user.userType === 'doctor');
+            const doctorContainer = document.getElementById('doctorUsers');
+            doctorContainer.innerHTML = doctorUsers.map(user => `
+                <div class="user-card">
+                    <div class="user-name">${user.name}</div>
+                    <div class="user-email">${user.email}</div>
+                    <div class="user-details">
+                        Password: ${user.password}<br>
+                        Specialization: ${user.specialization || 'N/A'}<br>
+                        Hospital: ${user.hospital || 'N/A'}<br>
+                        Fee: ${user.consultationFee || 'N/A'} BHD<br>
+                        Rating: ${user.rating || 'N/A'}/5
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function testLogin() {
+            const testCredentials = [
+                { email: 'patient@patientcare.bh', password: 'password', type: 'patient' },
+                { email: 'doctor@patientcare.bh', password: 'doctor123', type: 'doctor' },
+                { email: 'ahmed.mahmood@gmail.com', password: 'patient123', type: 'patient' },
+                { email: 'fatima.zahra@bmc.bh', password: 'doctor123', type: 'doctor' }
+            ];
+            
+            let results = [];
+            testCredentials.forEach(cred => {
+                const user = userStorage.findUser(cred.email, cred.password, cred.type);
+                if (user) {
+                    results.push(`✅ ${cred.email} (${cred.type}) - Login successful`);
+                } else {
+                    results.push(`❌ ${cred.email} (${cred.type}) - Login failed`);
+                }
+            });
+            
+            showResult('Login Test Results:<br>' + results.join('<br>'), 'success');
+        }
+
+        function clearUsers() {
+            userStorage.clearAllUsers();
+            loadUsers();
+            showResult('All users cleared!', 'success');
+        }
+
+        function showResult(message, type) {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        // Load users on page load
+        window.onload = function() {
+            loadUsers();
+        };
+    </script>
+</body>
+</html>
